@@ -313,6 +313,56 @@
             border: 1px solid rgba(139, 117, 93, 0.2);
         }
 
+        /* 圖片相關樣式 */
+        .puzzle-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(139, 117, 93, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 2px solid rgba(139, 117, 93, 0.2);
+        }
+
+        .puzzle-image:hover {
+            transform: scale(1.02);
+        }
+
+        .puzzle-image.enlarged {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.1);
+            z-index: 1000;
+            max-width: 90vw;
+            max-height: 90vh;
+            border: 5px solid white;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 999;
+            display: none;
+        }
+
+        .question-progress {
+            background: rgba(139, 117, 93, 0.1);
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            color: #8b755d;
+            border: 1px solid rgba(139, 117, 93, 0.2);
+        }
+
         .answer-input {
             width: 100%;
             padding: 15px;
@@ -390,6 +440,17 @@
             margin-top: 10px;
             display: none;
             border: 1px solid rgba(184, 92, 71, 0.3);
+        }
+
+        .success-message {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            font-weight: bold;
         }
 
         .progress-info {
@@ -548,30 +609,53 @@
                 <h2>多元宇宙的高小明們都得救了！</h2>
                 <p>你成功解開了所有謎團，拯救了六個宇宙的高小明！</p>
                 <div id="finalTime"></div>
-                <!-- 在這裡可以加入你自己設計的成功頁面內容 -->
                 <div style="margin-top: 30px; padding: 20px; background: rgba(139, 117, 93, 0.1); border-radius: 10px; border: 1px solid rgba(139, 117, 93, 0.2);">
-                    <p>在這裡加入你的自定義成功頁面內容...</p>
-                    <p>可以包含祝賀詞、獎勵信息、分享按鈕等</p>
+                    <p>🎉 恭喜你完成了這趟多元宇宙的奇幻冒險！</p>
+                    <p>✨ 所有宇宙的高小明都因為你的幫助而得救了！</p>
+                    <p>🌟 你展現了卓越的解謎能力和堅持不懈的精神！</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- 圖片放大覆蓋層 -->
+    <div class="overlay" id="overlay" onclick="closeEnlargedImage()"></div>
 
     <script>
         // 遊戲狀態
         let timeLeft = 40 * 60; // 40分鐘（秒）
         let gameTimer;
         let completedLevels = new Set();
+        let currentLevel2Question = 0; // 宇宙二的當前問題
 
         // 每關的正確答案
         const answers = {
             1: "答案1", // 請修改為第一關的正確答案
-            2: "答案2", // 請修改為第二關的正確答案
+            2: ["2786", "HN84", "重逢"], // 宇宙二的三個答案
             3: "答案3", // 請修改為第三關的正確答案
             4: "答案4", // 請修改為第四關的正確答案
             5: "答案5", // 請修改為第五關的正確答案
             6: "答案6"  // 請修改為第六關的正確答案
         };
+
+        // 宇宙二的圖片謎題
+        const universe2Questions = [
+            {
+                text: "觀察圖片中的線索，找出隱藏的數字密碼",
+                image: "ans01_001.png",
+                answer: "2786"
+            },
+            {
+                text: "仔細研究圖片，破解其中的字母數字組合", 
+                image: "ans01_002.png",
+                answer: "HN84"
+            },
+            {
+                text: "看懂圖片想要表達的含義是什麼？",
+                image: "ans01_003.png", 
+                answer: "重逢"
+            }
+        ];
 
         // 關卡內容
         const levelContents = {
@@ -592,8 +676,10 @@
 
 某天，牧場突然傳來消息，附近農場爆發禽流感。院長立刻加強消毒，但悲劇還是悄悄降臨了。先是小米垂頭喪氣、停止進食，接著其他三隻也陸續出現症狀。曉柔因傷心過度而身亡。
 
-幾年後，牧場變成學校了。某天，高小明在早自習時間去打掃，突然發現幾隻小雞在角落，他偶然發現了曉柔的筆記。`,
-                question: "請在這裡填入第二關的謎題內容..."
+幾年後，牧場變成學校了。某天，高小明在早自習時間去打掃，突然發現幾隻小雞在角落，他偶然發現了曉柔的筆記。
+
+筆記中有三張神秘的圖片，似乎隱藏著重要的線索...`,
+                question: "圖片謎題挑戰"
             },
             3: {
                 title: "宇宙三 - 深夜的雞鳴聲",
@@ -677,11 +763,49 @@
             document.getElementById('levelsGrid').classList.add('hidden');
             document.getElementById('levelDetail').style.display = 'block';
             
+            if (level === 2) {
+                // 宇宙二的特殊處理 - 圖片謎題
+                currentLevel2Question = 0;
+                showUniverse2Content();
+            } else {
+                // 其他關卡的一般處理
+                document.getElementById('levelContent').innerHTML = `
+                    <div class="level-header">
+                        <div class="level-title">${content.title}</div>
+                        <div class="level-status ${completedLevels.has(level) ? 'status-completed' : 'status-available'}">
+                            ${completedLevels.has(level) ? '已完成' : '探索中'}
+                        </div>
+                    </div>
+                    <div class="story-section">
+                        <div class="story-title">故事背景</div>
+                        <p style="white-space: pre-line;">${content.story}</p>
+                    </div>
+                    <div class="puzzle-content">
+                        <div class="puzzle-question">
+                            <strong>謎題：</strong>${content.question}
+                        </div>
+                        <input type="text" class="answer-input" id="answer${level}" placeholder="請輸入答案" ${completedLevels.has(level) ? 'disabled' : ''}>
+                        <button class="submit-btn" onclick="checkAnswer(${level})" ${completedLevels.has(level) ? 'disabled' : ''}>
+                            ${completedLevels.has(level) ? '已完成' : '提交答案'}
+                        </button>
+                        <div class="error-message" id="error${level}"></div>
+                        <div class="success-message" id="success${level}"></div>
+                    </div>
+                `;
+            }
+        }
+
+        // 顯示宇宙二的內容（圖片謎題）
+        function showUniverse2Content() {
+            const content = levelContents[2];
+            const currentQ = universe2Questions[currentLevel2Question];
+            const isCompleted = completedLevels.has(2);
+            
             document.getElementById('levelContent').innerHTML = `
                 <div class="level-header">
                     <div class="level-title">${content.title}</div>
-                    <div class="level-status ${completedLevels.has(level) ? 'status-completed' : 'status-available'}">
-                        ${completedLevels.has(level) ? '已完成' : '探索中'}
+                    <div class="level-status ${isCompleted ? 'status-completed' : 'status-available'}">
+                        ${isCompleted ? '已完成' : '探索中'}
                     </div>
                 </div>
                 <div class="story-section">
@@ -689,42 +813,145 @@
                     <p style="white-space: pre-line;">${content.story}</p>
                 </div>
                 <div class="puzzle-content">
-                    <div class="puzzle-question">
-                        <strong>謎題：</strong>${content.question}
-                    </div>
-                    <input type="text" class="answer-input" id="answer${level}" placeholder="請輸入答案" ${completedLevels.has(level) ? 'disabled' : ''}>
-                    <button class="submit-btn" onclick="checkAnswer(${level})" ${completedLevels.has(level) ? 'disabled' : ''}>
-                        ${completedLevels.has(level) ? '已完成' : '提交答案'}
-                    </button>
-                    <div class="error-message" id="error${level}"></div>
+                    ${!isCompleted ? `
+                        <div class="question-progress">
+                            第 ${currentLevel2Question + 1} 題 / 共 3 題
+                        </div>
+                        <div class="puzzle-question">
+                            <strong>謎題：</strong>${currentQ.text}
+                        </div>
+                        <img src="${currentQ.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片">
+                        <input type="text" class="answer-input" id="answer2" placeholder="請輸入答案" onkeypress="handleEnter(event, 2)">
+                        <button class="submit-btn" onclick="checkUniverse2Answer()">提交答案</button>
+                        <div class="error-message" id="error2"></div>
+                        <div class="success-message" id="success2"></div>
+                    ` : `
+                        <div class="puzzle-question">
+                            <strong>✅ 宇宙二已完成！</strong><br>
+                            你成功解開了曉柔筆記中的所有謎題！
+                        </div>
+                    `}
                 </div>
             `;
+        }
+
+        // 檢查宇宙二的答案
+        function checkUniverse2Answer() {
+            const userAnswer = document.getElementById('answer2').value.trim();
+            const correctAnswer = universe2Questions[currentLevel2Question].answer;
+            const errorDiv = document.getElementById('error2');
+            const successDiv = document.getElementById('success2');
+            
+            if (userAnswer === '') {
+                errorDiv.textContent = '請輸入答案！';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (userAnswer === correctAnswer) {
+                // 答案正確
+                successDiv.textContent = '答對了！';
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+                
+                setTimeout(() => {
+                    currentLevel2Question++;
+                    if (currentLevel2Question >= universe2Questions.length) {
+                        // 完成宇宙二
+                        completeLevel(2);
+                        showUniverse2Content();
+                    } else {
+                        // 進入下一題
+                        showUniverse2Content();
+                    }
+                }, 1500);
+            } else {
+                // 答案錯誤
+                errorDiv.textContent = '答案不正確，請再試一次！';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // 圖片放大功能
+        function enlargeImage() {
+            const image = document.querySelector('.puzzle-image');
+            const overlay = document.getElementById('overlay');
+            
+            if (image) {
+                image.classList.add('enlarged');
+                overlay.style.display = 'block';
+            }
+        }
+
+        // 關閉放大的圖片
+        function closeEnlargedImage() {
+            const image = document.querySelector('.puzzle-image');
+            const overlay = document.getElementById('overlay');
+            
+            if (image) {
+                image.classList.remove('enlarged');
+                overlay.style.display = 'none';
+            }
+        }
+
+        // 處理Enter鍵提交
+        function handleEnter(event, level) {
+            if (event.key === 'Enter') {
+                if (level === 2) {
+                    checkUniverse2Answer();
+                } else {
+                    checkAnswer(level);
+                }
+            }
         }
 
         // 返回關卡選擇
         function backToGrid() {
             document.getElementById('levelDetail').style.display = 'none';
             document.getElementById('levelsGrid').classList.remove('hidden');
+            // 重置宇宙二的進度（如果沒完成的話）
+            if (!completedLevels.has(2)) {
+                currentLevel2Question = 0;
+            }
         }
 
-        // 檢查答案
+        // 檢查答案（一般關卡）
         function checkAnswer(level) {
-            if (completedLevels.has(level)) return;
+            if (completedLevels.has(level) || level === 2) return;
             
             const userAnswer = document.getElementById(`answer${level}`).value.trim();
             const correctAnswer = answers[level];
             const errorDiv = document.getElementById(`error${level}`);
+            const successDiv = document.getElementById(`success${level}`);
+            
+            if (userAnswer === '') {
+                errorDiv.textContent = '請輸入答案！';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
             
             if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
                 // 答案正確
-                completeLevel(level);
+                successDiv.textContent = '答對了！關卡完成！';
+                successDiv.style.display = 'block';
                 errorDiv.style.display = 'none';
+                
+                setTimeout(() => {
+                    completeLevel(level);
+                }, 1500);
             } else {
                 // 答案錯誤
                 errorDiv.textContent = '答案不正確，請再試一次！';
                 errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
                 
-                // 3秒後隱藏錯誤訊息
                 setTimeout(() => {
                     errorDiv.style.display = 'none';
                 }, 3000);
@@ -743,13 +970,6 @@
             // 更新關卡卡片樣式
             const cardElement = statusElement.closest('.level-card');
             cardElement.classList.add('completed');
-            
-            // 禁用輸入和按鈕
-            const input = document.getElementById(`answer${level}`);
-            const button = input.nextElementSibling;
-            input.disabled = true;
-            button.disabled = true;
-            button.textContent = '已完成';
             
             // 更新進度
             updateProgress();
@@ -787,13 +1007,17 @@
             }
         }
 
-        // 按Enter鍵提交答案
+        // 按Enter鍵提交答案（一般版本）
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const activeElement = document.activeElement;
                 if (activeElement.classList.contains('answer-input')) {
                     const level = parseInt(activeElement.id.replace('answer', ''));
-                    checkAnswer(level);
+                    if (level === 2) {
+                        checkUniverse2Answer();
+                    } else {
+                        checkAnswer(level);
+                    }
                 }
             }
         });
