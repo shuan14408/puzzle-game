@@ -273,12 +273,31 @@
             border-radius: 6px;
             cursor: pointer;
             margin-bottom: 20px;
+            margin-right: 10px;
             font-size: 0.9em;
             transition: all 0.2s ease;
+            display: inline-block;
         }
 
         .back-btn:hover {
             background: rgba(139, 117, 93, 0.3);
+        }
+
+        .reset-btn {
+            background: rgba(184, 92, 71, 0.2);
+            color: #8b4513;
+            border: 1px solid rgba(184, 92, 71, 0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .reset-btn:hover {
+            background: rgba(184, 92, 71, 0.3);
         }
 
         .story-section {
@@ -499,7 +518,7 @@
         <!-- 開場介面 -->
         <div class="intro-page" id="introPage">
             <div class="intro-content">
-                <h1 class="game-title">靈感不是人造的</h1>
+                <h1 class="game-title">靈感不是人給的</h1>
                 <div class="story-content">
                     <p><strong>多元宇宙的奇幻冒險</strong></p>
                     <br>
@@ -510,6 +529,9 @@
                     <p><strong>你的任務：</strong>探索六個平行宇宙，幫助不同的高小明解開謎團！</p>
                     <br>
                     <p><strong>時間限制：40分鐘</strong></p>
+                    <div id="progressInfo" style="font-size: 0.9em; color: #8b755d; margin-top: 15px; font-style: italic; text-align: center;">
+                        <!-- 進度資訊會在這裡動態顯示 -->
+                    </div>
                 </div>
                 <button class="start-btn" onclick="startGame()">開始冒險</button>
             </div>
@@ -518,7 +540,7 @@
         <!-- 遊戲主頁面 -->
         <div id="gameContainer" class="hidden">
             <div class="header">
-                <h1 class="game-header">多元宇宙探索</h1>
+                <h1 class="game-header">拯救多元宇宙的高小明</h1>
             </div>
 
             <!-- 計時器 -->
@@ -530,6 +552,7 @@
             <!-- 進度顯示 -->
             <div class="progress-info">
                 <span id="progressText">已完成 0/6 個宇宙</span>
+                <button class="reset-btn" onclick="backToStory()" style="margin-left: 20px; padding: 5px 10px; font-size: 0.8em;">回到故事主題</button>
             </div>
 
             <!-- 關卡選擇頁面 -->
@@ -597,7 +620,9 @@
 
             <!-- 關卡詳情頁面 -->
             <div class="level-detail" id="levelDetail">
-                <button class="back-btn" onclick="backToGrid()">← 返回宇宙選擇</button>
+                <button class="back-btn" onclick="backToGrid()">返回宇宙選擇</button>
+                <button class="reset-btn" onclick="backToStory()">回到故事主題</button>
+                <button class="reset-btn" onclick="resetGame()" style="background: rgba(184, 92, 71, 0.3); margin-left: 10px;">重置遊戲進度</button>
                 <div id="levelContent"></div>
             </div>
         </div>
@@ -610,10 +635,11 @@
                 <p>你成功解開了所有謎團，拯救了六個宇宙的高小明！</p>
                 <div id="finalTime"></div>
                 <div style="margin-top: 30px; padding: 20px; background: rgba(139, 117, 93, 0.1); border-radius: 10px; border: 1px solid rgba(139, 117, 93, 0.2);">
-                    <p>🎉 恭喜你完成了這趟多元宇宙的奇幻冒險！</p>
-                    <p>✨ 所有宇宙的高小明都因為你的幫助而得救了！</p>
-                    <p>🌟 你展現了卓越的解謎能力和堅持不懈的精神！</p>
+                    <p>恭喜你完成了這趟多元宇宙的奇幻冒險！</p>
+                    <p>所有宇宙的高小明都因為你的幫助而得救了！</p>
+                    <p>你展現了卓越的解謎能力和堅持不懈的精神！</p>
                 </div>
+                <button class="start-btn" onclick="backToStory()" style="margin-top: 20px;">回到故事主題</button>
             </div>
         </div>
     </div>
@@ -627,12 +653,13 @@
         let gameTimer;
         let completedLevels = new Set();
         let currentLevel2Question = 0; // 宇宙二的當前問題
+        let currentLevel3Question = 0; // 宇宙三的當前問題
 
         // 每關的正確答案
         const answers = {
             1: "答案1", // 請修改為第一關的正確答案
-            2: ["2786", "HN84", "重逢"], // 宇宙二的三個答案
-            3: "答案3", // 請修改為第三關的正確答案
+            2: ["2786", "H8N4", "重逢"], // 宇宙二的三個答案
+            3: ["25213", "黃色", "相信"], // 宇宙三的三個答案（最終修正）
             4: "答案4", // 請修改為第四關的正確答案
             5: "答案5", // 請修改為第五關的正確答案
             6: "答案6"  // 請修改為第六關的正確答案
@@ -648,12 +675,31 @@
             {
                 text: "仔細研究圖片，破解其中的字母數字組合", 
                 image: "ans01_002.png",
-                answer: "HN84"
+                answer: "H8N4"
             },
             {
                 text: "看懂圖片想要表達的含義是什麼？",
                 image: "ans01_003.png", 
                 answer: "重逢"
+            }
+        ];
+
+        // 宇宙三的圖片謎題
+        const universe3Questions = [
+            {
+                text: "突然出現五隻小雞！排成一排似乎在提示什麼？",
+                image: "ans_02_001.png", 
+                answer: "25213"
+            },
+            {
+                text: "觀察圖片中編號所對應的小雞，牠的頭是什麼顏色？顏色似乎就是線索！",
+                image: "ans_02_002.png",
+                answer: "黃色"
+            },
+            {
+                text: "要實現願望的秘訣是什麼？",
+                image: "ans_02_003.png",
+                answer: "相信"
             }
         ];
 
@@ -690,8 +736,10 @@
 
 這個傳說始於十多年前的男孩小恩，他體弱多病，最大的夢想就是和同學們一起在操場上奔跑。某天運動會前夕，小恩住院了。當晚，警衛突然聽見操場傳來清晰的「喔喔喔——」雞叫聲。
 
-第二天早上，小恩奇蹟似地康復了。現在學生們都說：「每當九點半的雞鳴響起，希望之神來了，他會幫你實現那個最深最純粹的願望。」`,
-                question: "請在這裡填入第三關的謎題內容..."
+第二天早上，小恩奇蹟似地康復了。現在學生們都說：「每當九點半的雞鳴響起，希望之神來了，他會幫你實現那個最深最純粹的願望。」
+
+高小明也聽說了這個傳說，他決定要在九點半去校園裡等待，希望能實現長高的願望。但是，他遇到了一些神秘的線索...`,
+                question: "圖片謎題挑戰"
             },
             4: {
                 title: "宇宙四 - 巨大外星雞",
@@ -724,12 +772,112 @@
             }
         };
 
+        // 重新開始遊戲
+        function resetGame() {
+            // 詢問玩家是否真的要重置進度
+            const confirmReset = confirm('確定要重新開始遊戲嗎？這將會清除所有已完成的關卡進度。');
+            
+            if (!confirmReset) {
+                return; // 如果玩家選擇取消，就不執行重置
+            }
+            
+            // 清除計時器
+            if (gameTimer) {
+                clearInterval(gameTimer);
+            }
+            
+            // 重置遊戲狀態
+            timeLeft = 40 * 60;
+            completedLevels.clear();
+            currentLevel2Question = 0;
+            currentLevel3Question = 0;
+            
+            // 重置所有關卡狀態
+            for (let i = 1; i <= 6; i++) {
+                const statusElement = document.querySelector(`#status${i}`);
+                if (statusElement) {
+                    statusElement.textContent = '可探索';
+                    statusElement.className = 'level-status status-available';
+                }
+                
+                const cardElement = statusElement?.closest('.level-card');
+                if (cardElement) {
+                    cardElement.classList.remove('completed');
+                }
+            }
+            
+            // 清除首頁進度顯示
+            const progressInfo = document.getElementById('progressInfo');
+            if (progressInfo) {
+                progressInfo.textContent = '';
+            }
+            
+            // 隱藏所有頁面
+            document.getElementById('gameContainer').classList.add('hidden');
+            document.getElementById('successPage').style.display = 'none';
+            document.getElementById('levelDetail').style.display = 'none';
+            document.getElementById('levelsGrid').classList.remove('hidden');
+            
+            // 顯示開始頁面
+            document.getElementById('introPage').classList.remove('hidden');
+            
+            // 重置時間顯示顏色
+            document.getElementById('timeDisplay').style.color = '#8b755d';
+        }
+
+        // 新增：回到故事主題（不重置進度）
+        function backToStory() {
+            // 清除計時器
+            if (gameTimer) {
+                clearInterval(gameTimer);
+            }
+            
+            // 隱藏所有頁面
+            document.getElementById('gameContainer').classList.add('hidden');
+            document.getElementById('successPage').style.display = 'none';
+            document.getElementById('levelDetail').style.display = 'none';
+            document.getElementById('levelsGrid').classList.remove('hidden');
+            
+            // 更新首頁進度顯示
+            updateIntroProgress();
+            
+            // 顯示開始頁面
+            document.getElementById('introPage').classList.remove('hidden');
+            
+            // 重置時間顯示顏色，但保持進度
+            document.getElementById('timeDisplay').style.color = '#8b755d';
+        }
+
+        // 新增：更新首頁進度顯示
+        function updateIntroProgress() {
+            const progressInfo = document.getElementById('progressInfo');
+            if (completedLevels.size > 0) {
+                progressInfo.textContent = `已完成 ${completedLevels.size}/6 個宇宙，繼續你的冒險！`;
+            } else {
+                progressInfo.textContent = '';
+            }
+        }
+
         // 開始遊戲
         function startGame() {
+            console.log('開始遊戲函式被調用');
+            console.log('當前完成關卡數:', completedLevels.size);
+            
             document.getElementById('introPage').classList.add('hidden');
             document.getElementById('gameContainer').classList.remove('hidden');
-            startTimer();
-            updateProgress();
+            
+            // 如果有進度，不重新開始計時器，只是繼續遊戲
+            if (completedLevels.size > 0) {
+                console.log('有進度，繼續遊戲');
+                // 有進度，直接顯示遊戲界面
+                updateProgress();
+            } else {
+                console.log('新遊戲，開始計時');
+                // 沒有進度，重新開始計時
+                timeLeft = 40 * 60;
+                startTimer();
+                updateProgress();
+            }
         }
 
         // 開始遊戲計時器
@@ -765,8 +913,16 @@
             
             if (level === 2) {
                 // 宇宙二的特殊處理 - 圖片謎題
-                currentLevel2Question = 0;
+                if (!completedLevels.has(2)) {
+                    currentLevel2Question = 0; // 確保從第一題開始
+                }
                 showUniverse2Content();
+            } else if (level === 3) {
+                // 宇宙三的特殊處理 - 圖片謎題
+                if (!completedLevels.has(3)) {
+                    currentLevel3Question = 0; // 確保從第一題開始
+                }
+                showUniverse3Content();
             } else {
                 // 其他關卡的一般處理
                 document.getElementById('levelContent').innerHTML = `
@@ -790,6 +946,11 @@
                         </button>
                         <div class="error-message" id="error${level}"></div>
                         <div class="success-message" id="success${level}"></div>
+                        ${completedLevels.has(level) ? `
+                            <button class="start-btn" onclick="backToGrid()" style="margin-top: 20px; width: 100%;">
+                                繼續探索其他多元宇宙
+                            </button>
+                        ` : ''}
                     </div>
                 `;
             }
@@ -798,8 +959,59 @@
         // 顯示宇宙二的內容（圖片謎題）
         function showUniverse2Content() {
             const content = levelContents[2];
-            const currentQ = universe2Questions[currentLevel2Question];
             const isCompleted = completedLevels.has(2);
+            
+            let puzzleHTML = '';
+            
+            console.log('宇宙二當前題目編號:', currentLevel2Question, '是否完成:', isCompleted);
+            console.log('宇宙二題目總數:', universe2Questions.length);
+            
+            if (!isCompleted && currentLevel2Question < universe2Questions.length) {
+                // 還沒完成時，顯示當前題目
+                const currentQ = universe2Questions[currentLevel2Question];
+                console.log('顯示宇宙二題目:', currentQ);
+                
+                puzzleHTML = `
+                    <div class="question-progress">
+                        第 ${currentLevel2Question + 1} 題 / 共 ${universe2Questions.length} 題
+                    </div>
+                    <div class="puzzle-question">
+                        <strong>謎題：</strong>${currentQ.text}
+                    </div>
+                    <img src="${currentQ.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片">
+                    <input type="text" class="answer-input" id="answer2" placeholder="請輸入答案" onkeypress="handleEnter(event, 2)">
+                    <button class="submit-btn" onclick="checkUniverse2Answer()">提交答案</button>
+                    <div class="error-message" id="error2"></div>
+                    <div class="success-message" id="success2"></div>
+                `;
+            } else {
+                // 完成後，顯示所有題目
+                puzzleHTML = `
+                    <div class="puzzle-question">
+                        <strong>宇宙二已完成！</strong><br>
+                        你成功解開了曉柔筆記中的所有謎題！
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #8b755d; margin-bottom: 15px;">回顧所有謎題：</h4>
+                `;
+                
+                universe2Questions.forEach((q, index) => {
+                    puzzleHTML += `
+                        <div style="margin-bottom: 25px; padding: 15px; background: rgba(139, 117, 93, 0.05); border-radius: 8px; border: 1px solid rgba(139, 117, 93, 0.1);">
+                            <div style="font-weight: bold; margin-bottom: 10px; color: #8b755d;">第 ${index + 1} 題：${q.text}</div>
+                            <img src="${q.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片" style="margin: 10px 0;">
+                            <div style="color: #27ae60; font-weight: bold;">答案：${q.answer}</div>
+                        </div>
+                    `;
+                });
+                
+                puzzleHTML += `
+                    </div>
+                    <button class="start-btn" onclick="backToGrid()" style="margin-top: 20px; width: 100%;">
+                        繼續探索其他多元宇宙
+                    </button>
+                `;
+            }
             
             document.getElementById('levelContent').innerHTML = `
                 <div class="level-header">
@@ -813,24 +1025,81 @@
                     <p style="white-space: pre-line;">${content.story}</p>
                 </div>
                 <div class="puzzle-content">
-                    ${!isCompleted ? `
-                        <div class="question-progress">
-                            第 ${currentLevel2Question + 1} 題 / 共 3 題
+                    ${puzzleHTML}
+                </div>
+            `;
+        }
+
+        // 顯示宇宙三的內容（圖片謎題）
+        function showUniverse3Content() {
+            const content = levelContents[3];
+            const isCompleted = completedLevels.has(3);
+            
+            let puzzleHTML = '';
+            
+            console.log('宇宙三當前題目編號:', currentLevel3Question, '是否完成:', isCompleted);
+            console.log('宇宙三題目總數:', universe3Questions.length);
+            
+            if (!isCompleted && currentLevel3Question < universe3Questions.length) {
+                // 還沒完成時，顯示當前題目
+                const currentQ = universe3Questions[currentLevel3Question];
+                console.log('顯示宇宙三題目:', currentQ);
+                
+                puzzleHTML = `
+                    <div class="question-progress">
+                        第 ${currentLevel3Question + 1} 題 / 共 ${universe3Questions.length} 題
+                    </div>
+                    <div class="puzzle-question">
+                        <strong>謎題：</strong>${currentQ.text}
+                    </div>
+                    <img src="${currentQ.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片">
+                    <input type="text" class="answer-input" id="answer3" placeholder="請輸入答案" onkeypress="handleEnter(event, 3)">
+                    <button class="submit-btn" onclick="checkUniverse3Answer()">提交答案</button>
+                    <div class="error-message" id="error3"></div>
+                    <div class="success-message" id="success3"></div>
+                `;
+            } else {
+                // 完成後，顯示所有題目
+                puzzleHTML = `
+                    <div class="puzzle-question">
+                        <strong>宇宙三已完成！</strong><br>
+                        你成功解開了深夜雞鳴聲的所有謎題，高小明的願望實現了！
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #8b755d; margin-bottom: 15px;">回顧所有謎題：</h4>
+                `;
+                
+                universe3Questions.forEach((q, index) => {
+                    puzzleHTML += `
+                        <div style="margin-bottom: 25px; padding: 15px; background: rgba(139, 117, 93, 0.05); border-radius: 8px; border: 1px solid rgba(139, 117, 93, 0.1);">
+                            <div style="font-weight: bold; margin-bottom: 10px; color: #8b755d;">第 ${index + 1} 題：${q.text}</div>
+                            <img src="${q.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片" style="margin: 10px 0;">
+                            <div style="color: #27ae60; font-weight: bold;">答案：${q.answer}</div>
                         </div>
-                        <div class="puzzle-question">
-                            <strong>謎題：</strong>${currentQ.text}
-                        </div>
-                        <img src="${currentQ.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片">
-                        <input type="text" class="answer-input" id="answer2" placeholder="請輸入答案" onkeypress="handleEnter(event, 2)">
-                        <button class="submit-btn" onclick="checkUniverse2Answer()">提交答案</button>
-                        <div class="error-message" id="error2"></div>
-                        <div class="success-message" id="success2"></div>
-                    ` : `
-                        <div class="puzzle-question">
-                            <strong>✅ 宇宙二已完成！</strong><br>
-                            你成功解開了曉柔筆記中的所有謎題！
-                        </div>
-                    `}
+                    `;
+                });
+                
+                puzzleHTML += `
+                    </div>
+                    <button class="start-btn" onclick="backToGrid()" style="margin-top: 20px; width: 100%;">
+                        繼續探索其他多元宇宙
+                    </button>
+                `;
+            }
+            
+            document.getElementById('levelContent').innerHTML = `
+                <div class="level-header">
+                    <div class="level-title">${content.title}</div>
+                    <div class="level-status ${isCompleted ? 'status-completed' : 'status-available'}">
+                        ${isCompleted ? '已完成' : '探索中'}
+                    </div>
+                </div>
+                <div class="story-section">
+                    <div class="story-title">故事背景</div>
+                    <p style="white-space: pre-line;">${content.story}</p>
+                </div>
+                <div class="puzzle-content">
+                    ${puzzleHTML}
                 </div>
             `;
         }
@@ -841,6 +1110,9 @@
             const correctAnswer = universe2Questions[currentLevel2Question].answer;
             const errorDiv = document.getElementById('error2');
             const successDiv = document.getElementById('success2');
+            const submitBtn = document.querySelector('button[onclick="checkUniverse2Answer()"]');
+            
+            console.log('當前宇宙二題目:', currentLevel2Question, '答案:', userAnswer, '正確答案:', correctAnswer);
             
             if (userAnswer === '') {
                 errorDiv.textContent = '請輸入答案！';
@@ -849,28 +1121,102 @@
                 return;
             }
             
+            // 防止重複提交 - 更精確的按鈕選擇
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '處理中...';
+            }
+            
             if (userAnswer === correctAnswer) {
                 // 答案正確
-                successDiv.textContent = '答對了！';
+                successDiv.textContent = `答對了！第 ${currentLevel2Question + 1} 題完成！`;
                 successDiv.style.display = 'block';
                 errorDiv.style.display = 'none';
                 
                 setTimeout(() => {
+                    // 先增加題目編號
                     currentLevel2Question++;
+                    console.log('準備進入下一題，currentLevel2Question:', currentLevel2Question);
+                    
                     if (currentLevel2Question >= universe2Questions.length) {
                         // 完成宇宙二
+                        console.log('宇宙二完成！');
                         completeLevel(2);
-                        showUniverse2Content();
-                    } else {
-                        // 進入下一題
-                        showUniverse2Content();
                     }
-                }, 1500);
+                    // 重新顯示內容
+                    showUniverse2Content();
+                }, 2000);
             } else {
                 // 答案錯誤
                 errorDiv.textContent = '答案不正確，請再試一次！';
                 errorDiv.style.display = 'block';
                 successDiv.style.display = 'none';
+                
+                // 重新啟用按鈕
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '提交答案';
+                }
+                
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // 檢查宇宙三的答案
+        function checkUniverse3Answer() {
+            const userAnswer = document.getElementById('answer3').value.trim();
+            const correctAnswer = universe3Questions[currentLevel3Question].answer;
+            const errorDiv = document.getElementById('error3');
+            const successDiv = document.getElementById('success3');
+            const submitBtn = document.querySelector('button[onclick="checkUniverse3Answer()"]');
+            
+            console.log('當前宇宙三題目:', currentLevel3Question, '答案:', userAnswer, '正確答案:', correctAnswer);
+            
+            if (userAnswer === '') {
+                errorDiv.textContent = '請輸入答案！';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            // 防止重複提交 - 更精確的按鈕選擇
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '處理中...';
+            }
+            
+            if (userAnswer === correctAnswer) {
+                // 答案正確
+                successDiv.textContent = `答對了！第 ${currentLevel3Question + 1} 題完成！`;
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+                
+                setTimeout(() => {
+                    // 先增加題目編號
+                    currentLevel3Question++;
+                    console.log('準備進入下一題，currentLevel3Question:', currentLevel3Question);
+                    
+                    if (currentLevel3Question >= universe3Questions.length) {
+                        // 完成宇宙三
+                        console.log('宇宙三完成！');
+                        completeLevel(3);
+                    }
+                    // 重新顯示內容
+                    showUniverse3Content();
+                }, 2000);
+            } else {
+                // 答案錯誤
+                errorDiv.textContent = '答案不正確，請再試一次！';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                
+                // 重新啟用按鈕
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '提交答案';
+                }
                 
                 setTimeout(() => {
                     errorDiv.style.display = 'none';
@@ -905,6 +1251,8 @@
             if (event.key === 'Enter') {
                 if (level === 2) {
                     checkUniverse2Answer();
+                } else if (level === 3) {
+                    checkUniverse3Answer();
                 } else {
                     checkAnswer(level);
                 }
@@ -915,15 +1263,18 @@
         function backToGrid() {
             document.getElementById('levelDetail').style.display = 'none';
             document.getElementById('levelsGrid').classList.remove('hidden');
-            // 重置宇宙二的進度（如果沒完成的話）
+            // 重置未完成關卡的進度
             if (!completedLevels.has(2)) {
                 currentLevel2Question = 0;
+            }
+            if (!completedLevels.has(3)) {
+                currentLevel3Question = 0;
             }
         }
 
         // 檢查答案（一般關卡）
         function checkAnswer(level) {
-            if (completedLevels.has(level) || level === 2) return;
+            if (completedLevels.has(level) || level === 2 || level === 3) return;
             
             const userAnswer = document.getElementById(`answer${level}`).value.trim();
             const correctAnswer = answers[level];
@@ -1003,7 +1354,7 @@
                 document.getElementById('successPage').style.display = 'flex';
             } else {
                 alert('時間到！遊戲結束。請重新開始。');
-                location.reload();
+                resetGame();
             }
         }
 
@@ -1011,10 +1362,28 @@
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const activeElement = document.activeElement;
-                if (activeElement.classList.contains('answer-input')) {
+                if (activeElement && activeElement.classList.contains('answer-input')) {
+                    // 根據不同關卡檢查對應的按鈕是否被禁用
                     const level = parseInt(activeElement.id.replace('answer', ''));
+                    let submitBtn;
+                    
+                    if (level === 2) {
+                        submitBtn = document.querySelector('button[onclick="checkUniverse2Answer()"]');
+                    } else if (level === 3) {
+                        submitBtn = document.querySelector('button[onclick="checkUniverse3Answer()"]');
+                    } else {
+                        submitBtn = document.querySelector('.submit-btn');
+                    }
+                    
+                    if (submitBtn && submitBtn.disabled) {
+                        console.log('按鈕已禁用，防止重複提交');
+                        return; // 如果按鈕被禁用，不執行提交
+                    }
+                    
                     if (level === 2) {
                         checkUniverse2Answer();
+                    } else if (level === 3) {
+                        checkUniverse3Answer();
                     } else {
                         checkAnswer(level);
                     }
