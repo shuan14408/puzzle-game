@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>靈感不是人造的</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f4e8d0 0%, #e6d3b0 50%, #d4c19c 100%);
+            min-height: 100vh;
+            color: #4a3728;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(45deg, rgba(139, 117, 93, 0.1) 1px, transparent 1px),
+                linear-gradient(-45deg, rgba(139, 117, 93, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 20% 80%, rgba(139, 117, 93, 0.05) 2px, transparent 2px),
+                radial-gradient(circle at 80% 20%, rgba(139, 117, 93, 0.05) 2px, transparent 2px);
+            background-size: 60px 60px, 60px 60px, 120px 120px, 120px 120px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 開場頁面樣式 */
+        .intro-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .intro-content {
+            background: rgba(244, 232, 208, 0.9);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 
+                0 8px 32px rgba(139, 117, 93, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5),
+                inset 0 -1px 0 rgba(139, 117, 93, 0.2);
+            border: 2px solid rgba(139, 117, 93, 0.3);
+            position: relative;
+        }
+
+        .intro-content::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(139, 117, 93, 0.2);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        .game-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #8b755d;
+            text-shadow: 2px 2px 4px rgba(139, 117, 93, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .story-content {
+            text-align: left;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            color: #5a4a3a;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #8b755d 0%, #a68968 100%);
+            color: #f4e8d0;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 15px rgba(139, 117, 93, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(139, 117, 93, 0.4);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 20px rgba(139, 117, 93, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-header {
+            font-size: 2.2em;
+            color: #8b755d;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .timer {
+            background: rgba(244, 232, 208, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 
+                0 4px 15px rgba(139, 117, 93, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(139, 117, 93, 0.3);
+        }
+
+        .timer h2 {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #5a4a3a;
+        }
+
+        .time-display {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #8b755d;
+            text-shadow: 1px 1px 2px rgba(139, 117, 93, 0.3);
+        }
+
+        /* 關卡選擇網格 */
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .level-card {
+            background: rgba(244, 232, 208, 0.9);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 
+                0 4px 15px rgba(139, 117, 93, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(139, 117, 93, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 1px solid rgba(139, 117, 93, 0.15);
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .level-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(139, 117, 93, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .level-card.completed {
+            background: rgba(166, 137, 104, 0.3);
+            border-color: rgba(139, 117, 93, 0.5);
+        }
+
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .level-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #8b755d;
+        }
+
+        .level-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            border: 1px solid;
+        }
+
+        .status-available {
+            background: rgba(139, 117, 93, 0.1);
+            color: #8b755d;
+            border-color: rgba(139, 117, 93, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(166, 137, 104, 0.2);
+            color: #a68968;
+            border-color: rgba(166, 137, 104, 0.4);
+        }
+
+        .level-description {
+            font-size: 0.95em;
+            color: #5a4a3a;
+            line-height: 1.5;
+        }
+
+        /* 關卡詳情頁面 */
+        .level-detail {
+            display: none;
+            background: rgba(244, 232, 208, 0.95);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 
+                0 8px 32px rgba(139, 117, 93, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(139, 117, 93, 0.3);
+            position: relative;
+        }
+
+        .level-detail::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(139, 117, 93, 0.15);
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .back-btn {
+            background: rgba(139, 117, 93, 0.2);
+            color: #8b755d;
+            border: 1px solid rgba(139, 117, 93, 0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 117, 93, 0.3);
+        }
+
+        .story-section {
+            background: rgba(139, 117, 93, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 1em;
+            border: 1px solid rgba(139, 117, 93, 0.2);
+        }
+
+        .story-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #8b755d;
+            margin-bottom: 15px;
+        }
+
+        .puzzle-content {
+            margin-bottom: 20px;
+        }
+
+        .puzzle-question {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            background: rgba(139, 117, 93, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #8b755d;
+            border: 1px solid rgba(139, 117, 93, 0.2);
+        }
+
+        /* 圖片相關樣式 */
+        .puzzle-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(139, 117, 93, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 2px solid rgba(139, 117, 93, 0.2);
+        }
+
+        .puzzle-image:hover {
+            transform: scale(1.02);
+        }
+
+        .puzzle-image.enlarged {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.1);
+            z-index: 1000;
+            max-width: 90vw;
+            max-height: 90vh;
+            border: 5px solid white;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 999;
+            display: none;
+        }
+
+        .question-progress {
+            background: rgba(139, 117, 93, 0.1);
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            color: #8b755d;
+            border: 1px solid rgba(139, 117, 93, 0.2);
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(139, 117, 93, 0.3);
+            border-radius: 8px;
+            font-size: 1.1em;
+            background: rgba(255, 255, 255, 0.9);
+            color: #4a3728;
+            margin-bottom: 15px;
+            transition: border-color 0.2s ease;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #8b755d;
+            box-shadow: 0 0 0 3px rgba(139, 117, 93, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #8b755d 0%, #a68968 100%);
+            color: #f4e8d0;
+            border: 1px solid rgba(139, 117, 93, 0.4);
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 
+                0 2px 8px rgba(139, 117, 93, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 12px rgba(139, 117, 93, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .submit-btn:disabled {
+            background: rgba(139, 117, 93, 0.3);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-page {
+            display: none;
+            text-align: center;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .success-content {
+            background: rgba(244, 232, 208, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 
+                0 8px 32px rgba(139, 117, 93, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(139, 117, 93, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            background: rgba(184, 92, 71, 0.2);
+            color: #8b4513;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid rgba(184, 92, 71, 0.3);
+        }
+
+        .success-message {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            font-weight: bold;
+        }
+
+        .progress-info {
+            background: rgba(244, 232, 208, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 
+                0 2px 8px rgba(139, 117, 93, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(139, 117, 93, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .levels-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .level-card {
+                padding: 20px;
+            }
+            
+            .time-display {
+                font-size: 2em;
+            }
+            
+            .game-title {
+                font-size: 2em;
+            }
+            
+            .intro-content,
+            .level-detail {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 開場介面 -->
+        <div class="intro-page" id="introPage">
+            <div class="intro-content">
+                <h1 class="game-title">靈感不是人造的</h1>
+                <div class="story-content">
+                    <p><strong>多元宇宙的奇幻冒險</strong></p>
+                    <br>
+                    <p>傳說中這個世界有許多平行時空，我們又稱其多元宇宙。這個故事在說的是一位同德國小的小朋友<strong>高小明</strong>，在不同的宇宙中，有著不同的個性，卻都在學校遇上了怪事。</p>
+                    <br>
+                    <p>據說只有不同宇宙的高小明分別找到發生這些怪事的原因，高小明才能不再遇到怪事。</p>
+                    <br>
+                    <p><strong>你的任務：</strong>探索六個平行宇宙，幫助不同的高小明解開謎團！</p>
+                    <br>
+                    <p><strong>時間限制：40分鐘</strong></p>
+                </div>
+                <button class="start-btn" onclick="startGame()">開始冒險</button>
+            </div>
+        </div>
+
+        <!-- 遊戲主頁面 -->
+        <div id="gameContainer" class="hidden">
+            <div class="header">
+                <h1 class="game-header">多元宇宙探索</h1>
+            </div>
+
+            <!-- 計時器 -->
+            <div class="timer">
+                <h2>剩餘時間</h2>
+                <div class="time-display" id="timeDisplay">40:00</div>
+            </div>
+
+            <!-- 進度顯示 -->
+            <div class="progress-info">
+                <span id="progressText">已完成 0/6 個宇宙</span>
+            </div>
+
+            <!-- 關卡選擇頁面 -->
+            <div id="levelsGrid" class="levels-grid">
+                <div class="level-card" onclick="openLevel(1)">
+                    <div class="level-header">
+                        <div class="level-title">宇宙一 - 消失的筆</div>
+                        <div class="level-status status-available" id="status1">可探索</div>
+                    </div>
+                    <div class="level-description">
+                        好動愛說話，充滿好奇心的高小明，因為拿角落裡的一枝筆寫字而消失了...
+                    </div>
+                </div>
+
+                <div class="level-card" onclick="openLevel(2)">
+                    <div class="level-header">
+                        <div class="level-title">宇宙二 - 曉柔的小雞</div>
+                        <div class="level-status status-available" id="status2">可探索</div>
+                    </div>
+                    <div class="level-description">
+                        高瘦黝黑熱情，喜愛動物的高小明，在早自習打掃時看到了幾隻神秘的小雞...
+                    </div>
+                </div>
+
+                <div class="level-card" onclick="openLevel(3)">
+                    <div class="level-header">
+                        <div class="level-title">宇宙三 - 深夜的雞鳴聲</div>
+                        <div class="level-status status-available" id="status3">可探索</div>
+                    </div>
+                    <div class="level-description">
+                        矮矮胖胖，臉上有井字型傷疤的高小明，一直有個想要長高的願望...
+                    </div>
+                </div>
+
+                <div class="level-card" onclick="openLevel(4)">
+                    <div class="level-header">
+                        <div class="level-title">宇宙四 - 巨大外星雞</div>
+                        <div class="level-status status-available" id="status4">可探索</div>
+                    </div>
+                    <div class="level-description">
+                        不相信外星人，整天調皮搗蛋愛整人的高小明，遇到了真正的外星生物...
+                    </div>
+                </div>
+
+                <div class="level-card" onclick="openLevel(5)">
+                    <div class="level-header">
+                        <div class="level-title">宇宙五 - 龜仙人的詛咒</div>
+                        <div class="level-status status-available" id="status5">可探索</div>
+                    </div>
+                    <div class="level-description">
+                        很倒楣的膽小鬼高小明，據說被龜仙人詛咒了，捲入了一場神秘實驗...
+                    </div>
+                </div>
+
+                <div class="level-card" onclick="openLevel(6)">
+                    <div class="level-header">
+                        <div class="level-title">宇宙六 - 神秘第六關</div>
+                        <div class="level-status status-available" id="status6">可探索</div>
+                    </div>
+                    <div class="level-description">
+                        第六個宇宙的高小明遇到了什麼樣的怪事呢？請在這裡填入第六關的簡介...
+                    </div>
+                </div>
+            </div>
+
+            <!-- 關卡詳情頁面 -->
+            <div class="level-detail" id="levelDetail">
+                <button class="back-btn" onclick="backToGrid()">← 返回宇宙選擇</button>
+                <div id="levelContent"></div>
+            </div>
+        </div>
+
+        <!-- 成功頁面 -->
+        <div class="success-page" id="successPage">
+            <div class="success-content">
+                <h1>恭喜過關！</h1>
+                <h2>多元宇宙的高小明們都得救了！</h2>
+                <p>你成功解開了所有謎團，拯救了六個宇宙的高小明！</p>
+                <div id="finalTime"></div>
+                <div style="margin-top: 30px; padding: 20px; background: rgba(139, 117, 93, 0.1); border-radius: 10px; border: 1px solid rgba(139, 117, 93, 0.2);">
+                    <p>🎉 恭喜你完成了這趟多元宇宙的奇幻冒險！</p>
+                    <p>✨ 所有宇宙的高小明都因為你的幫助而得救了！</p>
+                    <p>🌟 你展現了卓越的解謎能力和堅持不懈的精神！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 圖片放大覆蓋層 -->
+    <div class="overlay" id="overlay" onclick="closeEnlargedImage()"></div>
+
+    <script>
+        // 遊戲狀態
+        let timeLeft = 40 * 60; // 40分鐘（秒）
+        let gameTimer;
+        let completedLevels = new Set();
+        let currentLevel2Question = 0; // 宇宙二的當前問題
+
+        // 每關的正確答案
+        const answers = {
+            1: "答案1", // 請修改為第一關的正確答案
+            2: ["2786", "HN84", "重逢"], // 宇宙二的三個答案
+            3: "答案3", // 請修改為第三關的正確答案
+            4: "答案4", // 請修改為第四關的正確答案
+            5: "答案5", // 請修改為第五關的正確答案
+            6: "答案6"  // 請修改為第六關的正確答案
+        };
+
+        // 宇宙二的圖片謎題
+        const universe2Questions = [
+            {
+                text: "觀察圖片中的線索，找出隱藏的數字密碼",
+                image: "ans01_001.png",
+                answer: "2786"
+            },
+            {
+                text: "仔細研究圖片，破解其中的字母數字組合", 
+                image: "ans01_002.png",
+                answer: "HN84"
+            },
+            {
+                text: "看懂圖片想要表達的含義是什麼？",
+                image: "ans01_003.png", 
+                answer: "重逢"
+            }
+        ];
+
+        // 關卡內容
+        const levelContents = {
+            1: {
+                title: "宇宙一 - 消失的筆",
+                story: `在第一個多元宇宙中，高小明是一個好動愛說話，充滿好奇心的學生。因為拿角落裡的一枝筆寫字而消失了，他的朋友表示：「我的朋友高小明不見了！」
+
+故事的起源是高小明坐在教室的角落，他在寫字時突然看到一枝筆於是撿了起來，之後就沒人看到他。於是有人看到了一張紙條！上面寫著「來～救～我～」！
+
+隔天，警察來了也一無所穫，大家都很害怕～ 過了幾天「又有人不見了」！`,
+                question: "請在這裡填入第一關的謎題內容..."
+            },
+            2: {
+                title: "宇宙二 - 曉柔的小雞",
+                story: `第二個多元宇宙的高小明高瘦黝黑熱情，是一位喜愛動物的學生。
+
+學校從前是一座牧場，牧場的院長的小孩曉柔在現在的資優班裡養了四隻雞，分別叫做小米、嘟嘟、圓圓、黃黃。她每天都細心照顧小雞，像在照顧自己的小孩一樣。
+
+某天，牧場突然傳來消息，附近農場爆發禽流感。院長立刻加強消毒，但悲劇還是悄悄降臨了。先是小米垂頭喪氣、停止進食，接著其他三隻也陸續出現症狀。曉柔因傷心過度而身亡。
+
+幾年後，牧場變成學校了。某天，高小明在早自習時間去打掃，突然發現幾隻小雞在角落，他偶然發現了曉柔的筆記。
+
+筆記中有三張神秘的圖片，似乎隱藏著重要的線索...`,
+                question: "圖片謎題挑戰"
+            },
+            3: {
+                title: "宇宙三 - 深夜的雞鳴聲",
+                story: `高小明在第三個多元宇宙中矮矮胖胖的，臉上還有一個井字型的傷疤，一直有個想要長高的願望。
+
+這是一個校園傳說：《深夜的雞鳴聲》
+只要在九點半聽到校園裡傳來雞的叫聲，就代表有學生的願望即將實現。
+
+這個傳說始於十多年前的男孩小恩，他體弱多病，最大的夢想就是和同學們一起在操場上奔跑。某天運動會前夕，小恩住院了。當晚，警衛突然聽見操場傳來清晰的「喔喔喔——」雞叫聲。
+
+第二天早上，小恩奇蹟似地康復了。現在學生們都說：「每當九點半的雞鳴響起，希望之神來了，他會幫你實現那個最深最純粹的願望。」`,
+                question: "請在這裡填入第三關的謎題內容..."
+            },
+            4: {
+                title: "宇宙四 - 巨大外星雞",
+                story: `第四個多元宇宙中，高小明是一個不相信外星人，整天調皮搗蛋愛整人的學生。
+
+但有一天出現了一隻巨大的外星雞！阿雞來到人類的世界，牠看到的第一個人類是高小明。
+
+因為牠非常的「雞」餓，所以就把高小明一口吃掉了！！在高小明被吃掉的前10秒，他一直在不專心的滑手機。後來就被驚嚇的毛都飛起來了...`,
+                question: "請在這裡填入第四關的謎題內容..."
+            },
+            5: {
+                title: "宇宙五 - 龜仙人的詛咒",
+                story: `第五個多元宇宙中，高小明是個很倒楣的膽小鬼，據說他是被龜仙人詛咒了。
+
+龜仙人看到了劉小力的毛散落在地，就撿起一根毛，拿去做實驗。到了實驗室，科學家跟祂說：「這個毛很珍貴，誰落下了這根毛？」
+
+龜仙人說：「這是劉小力掉的...」科學家說：「那找出劉小力，一定要快！」
+
+龜仙人要出門了，祂一踏出門口就看到了劉小力，把他帶到實驗室。科學家說：「先把他打暈，再取幾根毛。」
+
+後來高小明就出現了，阻止龜仙人這樣做，科學家說：「簡直就是...哈哈」。`,
+                question: "請在這裡填入第五關的謎題內容..."
+            },
+            6: {
+                title: "宇宙六 - 神秘第六關",
+                story: `請在這裡填入第六關的完整故事背景...
+
+這是第六個宇宙的高小明遇到的神秘事件，請描述他的性格特徵和遇到的怪事。`,
+                question: "請在這裡填入第六關的謎題內容..."
+            }
+        };
+
+        // 開始遊戲
+        function startGame() {
+            document.getElementById('introPage').classList.add('hidden');
+            document.getElementById('gameContainer').classList.remove('hidden');
+            startTimer();
+            updateProgress();
+        }
+
+        // 開始遊戲計時器
+        function startTimer() {
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                updateTimeDisplay();
+                
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        // 更新時間顯示
+        function updateTimeDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timeDisplay').textContent = timeString;
+            
+            // 時間不足時變紅色
+            if (timeLeft <= 300) { // 5分鐘
+                document.getElementById('timeDisplay').style.color = '#b85c47';
+            }
+        }
+
+        // 打開關卡
+        function openLevel(level) {
+            const content = levelContents[level];
+            document.getElementById('levelsGrid').classList.add('hidden');
+            document.getElementById('levelDetail').style.display = 'block';
+            
+            if (level === 2) {
+                // 宇宙二的特殊處理 - 圖片謎題
+                currentLevel2Question = 0;
+                showUniverse2Content();
+            } else {
+                // 其他關卡的一般處理
+                document.getElementById('levelContent').innerHTML = `
+                    <div class="level-header">
+                        <div class="level-title">${content.title}</div>
+                        <div class="level-status ${completedLevels.has(level) ? 'status-completed' : 'status-available'}">
+                            ${completedLevels.has(level) ? '已完成' : '探索中'}
+                        </div>
+                    </div>
+                    <div class="story-section">
+                        <div class="story-title">故事背景</div>
+                        <p style="white-space: pre-line;">${content.story}</p>
+                    </div>
+                    <div class="puzzle-content">
+                        <div class="puzzle-question">
+                            <strong>謎題：</strong>${content.question}
+                        </div>
+                        <input type="text" class="answer-input" id="answer${level}" placeholder="請輸入答案" ${completedLevels.has(level) ? 'disabled' : ''}>
+                        <button class="submit-btn" onclick="checkAnswer(${level})" ${completedLevels.has(level) ? 'disabled' : ''}>
+                            ${completedLevels.has(level) ? '已完成' : '提交答案'}
+                        </button>
+                        <div class="error-message" id="error${level}"></div>
+                        <div class="success-message" id="success${level}"></div>
+                    </div>
+                `;
+            }
+        }
+
+        // 顯示宇宙二的內容（圖片謎題）
+        function showUniverse2Content() {
+            const content = levelContents[2];
+            const currentQ = universe2Questions[currentLevel2Question];
+            const isCompleted = completedLevels.has(2);
+            
+            document.getElementById('levelContent').innerHTML = `
+                <div class="level-header">
+                    <div class="level-title">${content.title}</div>
+                    <div class="level-status ${isCompleted ? 'status-completed' : 'status-available'}">
+                        ${isCompleted ? '已完成' : '探索中'}
+                    </div>
+                </div>
+                <div class="story-section">
+                    <div class="story-title">故事背景</div>
+                    <p style="white-space: pre-line;">${content.story}</p>
+                </div>
+                <div class="puzzle-content">
+                    ${!isCompleted ? `
+                        <div class="question-progress">
+                            第 ${currentLevel2Question + 1} 題 / 共 3 題
+                        </div>
+                        <div class="puzzle-question">
+                            <strong>謎題：</strong>${currentQ.text}
+                        </div>
+                        <img src="${currentQ.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片">
+                        <input type="text" class="answer-input" id="answer2" placeholder="請輸入答案" onkeypress="handleEnter(event, 2)">
+                        <button class="submit-btn" onclick="checkUniverse2Answer()">提交答案</button>
+                        <div class="error-message" id="error2"></div>
+                        <div class="success-message" id="success2"></div>
+                    ` : `
+                        <div class="puzzle-question">
+                            <strong>✅ 宇宙二已完成！</strong><br>
+                            你成功解開了曉柔筆記中的所有謎題！
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        // 檢查宇宙二的答案
+        function checkUniverse2Answer() {
+            const userAnswer = document.getElementById('answer2').value.trim();
+            const correctAnswer = universe2Questions[currentLevel2Question].answer;
+            const errorDiv = document.getElementById('error2');
+            const successDiv = document.getElementById('success2');
+            
+            if (userAnswer === '') {
+                errorDiv.textContent = '請輸入答案！';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (userAnswer === correctAnswer) {
+                // 答案正確
+                successDiv.textContent = '答對了！';
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+                
+                setTimeout(() => {
+                    currentLevel2Question++;
+                    if (currentLevel2Question >= universe2Questions.length) {
+                        // 完成宇宙二
+                        completeLevel(2);
+                        showUniverse2Content();
+                    } else {
+                        // 進入下一題
+                        showUniverse2Content();
+                    }
+                }, 1500);
+            } else {
+                // 答案錯誤
+                errorDiv.textContent = '答案不正確，請再試一次！';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // 圖片放大功能
+        function enlargeImage() {
+            const image = document.querySelector('.puzzle-image');
+            const overlay = document.getElementById('overlay');
+            
+            if (image) {
+                image.classList.add('enlarged');
+                overlay.style.display = 'block';
+            }
+        }
+
+        // 關閉放大的圖片
+        function closeEnlargedImage() {
+            const image = document.querySelector('.puzzle-image');
+            const overlay = document.getElementById('overlay');
+            
+            if (image) {
+                image.classList.remove('enlarged');
+                overlay.style.display = 'none';
+            }
+        }
+
+        // 處理Enter鍵提交
+        function handleEnter(event, level) {
+            if (event.key === 'Enter') {
+                if (level === 2) {
+                    checkUniverse2Answer();
+                } else {
+                    checkAnswer(level);
+                }
+            }
+        }
+
+        // 返回關卡選擇
+        function backToGrid() {
+            document.getElementById('levelDetail').style.display = 'none';
+            document.getElementById('levelsGrid').classList.remove('hidden');
+            // 重置宇宙二的進度（如果沒完成的話）
+            if (!completedLevels.has(2)) {
+                currentLevel2Question = 0;
+            }
+        }
+
+        // 檢查答案（一般關卡）
+        function checkAnswer(level) {
+            if (completedLevels.has(level) || level === 2) return;
+            
+            const userAnswer = document.getElementById(`answer${level}`).value.trim();
+            const correctAnswer = answers[level];
+            const errorDiv = document.getElementById(`error${level}`);
+            const successDiv = document.getElementById(`success${level}`);
+            
+            if (userAnswer === '') {
+                errorDiv.textContent = '請輸入答案！';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                return;
+            }
+            
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                // 答案正確
+                successDiv.textContent = '答對了！關卡完成！';
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+                
+                setTimeout(() => {
+                    completeLevel(level);
+                }, 1500);
+            } else {
+                // 答案錯誤
+                errorDiv.textContent = '答案不正確，請再試一次！';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // 完成關卡
+        function completeLevel(level) {
+            completedLevels.add(level);
+            
+            // 更新關卡狀態
+            const statusElement = document.querySelector(`#status${level}`);
+            statusElement.textContent = '已完成';
+            statusElement.className = 'level-status status-completed';
+            
+            // 更新關卡卡片樣式
+            const cardElement = statusElement.closest('.level-card');
+            cardElement.classList.add('completed');
+            
+            // 更新進度
+            updateProgress();
+            
+            // 檢查是否全部完成
+            if (completedLevels.size === 6) {
+                setTimeout(() => {
+                    endGame(true);
+                }, 1000);
+            }
+        }
+
+        // 更新進度顯示
+        function updateProgress() {
+            document.getElementById('progressText').textContent = `已完成 ${completedLevels.size}/6 個宇宙`;
+        }
+
+        // 結束遊戲
+        function endGame(success) {
+            clearInterval(gameTimer);
+            
+            if (success) {
+                // 計算完成時間
+                const totalTime = 40 * 60 - timeLeft;
+                const minutes = Math.floor(totalTime / 60);
+                const seconds = totalTime % 60;
+                const timeString = `${minutes}分${seconds}秒`;
+                
+                document.getElementById('finalTime').innerHTML = `<h3>完成時間: ${timeString}</h3>`;
+                document.getElementById('gameContainer').style.display = 'none';
+                document.getElementById('successPage').style.display = 'flex';
+            } else {
+                alert('時間到！遊戲結束。請重新開始。');
+                location.reload();
+            }
+        }
+
+        // 按Enter鍵提交答案（一般版本）
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.classList.contains('answer-input')) {
+                    const level = parseInt(activeElement.id.replace('answer', ''));
+                    if (level === 2) {
+                        checkUniverse2Answer();
+                    } else {
+                        checkAnswer(level);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
