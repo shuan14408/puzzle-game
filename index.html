@@ -1,46 +1,4 @@
-// 第六關碎片拼圖遊戲相關函數
-        let assembledWord = [];
-        let availableFragments = [];
-
-        function initFragmentPuzzle() {
-            const targetWord = 'CREATE';
-            // 創建帶有ID的碎片對象，包含額外的視覺效果
-            availableFragments = targetWord.split('').map((letter, index) => ({
-                id: `fragment-${letter.toLowerCase()}${letter === 'E' ? (index === 2 ? '1' : '2') : ''}`,
-                letter: letter,
-                class: `fragment-${letter.toLowerCase()}${letter === 'E' ? (index === 2 ? '1' : '2') : ''}`
-            }));
-            
-            // 隨機打亂碎片
-            availableFragments.sort(() => Math.random() - 0.5);
-            assembledWord = [];
-            
-            renderFragmentPuzzle();
-        }
-
-        function renderFragmentPuzzle() {
-            const fragmentsPool = document.getElementById('fragmentsPool');
-            const assemblyBoard = document.getElementById('assemblyBoard');
-            
-            // 渲染可用碎片
-            fragmentsPool.innerHTML = '';
-            availableFragments.forEach((fragment, index) => {
-                const fragmentElement = document.createElement('div');
-                fragmentElement.className = `letter-fragment ${fragment.class}`;
-                fragmentElement.textContent = fragment.letter;
-                fragmentElement.onclick = () => selectFragment(index);
-                fragmentElement.title = `點擊將 "${fragment.letter}" 放入組裝區域`;
-                fragmentsPool.appendChild(fragmentElement);
-            });
-            
-            // 渲染組裝區域
-            assemblyBoard.innerHTML = '';
-            for (let i = 0; i < 6; i++) { // CREATE 有6個字母
-                const slot = document.createElement('div');
-                slot.className = 'assembly-slot';
-                slot.setAttribute('data-position', i + 1);
-                
-                <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -275,22 +233,10 @@
             border-color: rgba(139, 117, 93, 0.3);
         }
 
-        .status-locked {
-            background: rgba(184, 92, 71, 0.1);
-            color: #8b4513;
-            border-color: rgba(184, 92, 71, 0.3);
-        }
-
-        .level-card.locked {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .level-card.locked:hover {
-            transform: none;
-            box-shadow: 
-                0 4px 15px rgba(139, 117, 93, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        .status-completed {
+            background: rgba(166, 137, 104, 0.2);
+            color: #a68968;
+            border-color: rgba(166, 137, 104, 0.4);
         }
 
         .level-description {
@@ -548,168 +494,52 @@
             border: 1px solid rgba(139, 117, 93, 0.3);
         }
 
-        .status-completed {
-            background: rgba(166, 137, 104, 0.2);
-            color: #a68968;
-            border-color: rgba(166, 137, 104, 0.4);
-        }
-
-        .status-locked {
-            background: rgba(184, 92, 71, 0.1);
-            color: #8b4513;
-            border-color: rgba(184, 92, 71, 0.3);
-        }
-
-        .level-card.locked {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .level-card.locked:hover {
-            transform: none;
-            box-shadow: 
-                0 4px 15px rgba(139, 117, 93, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        /* 碎片拼圖遊戲樣式 */
-        .puzzle-container {
-            display: flex;
-            gap: 30px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .fragments-area {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .assembly-area {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .area-title {
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #8b755d;
-            text-align: center;
-            padding: 10px;
-            background: rgba(139, 117, 93, 0.1);
-            border-radius: 8px;
-            border: 1px solid rgba(139, 117, 93, 0.2);
-        }
-
-        .fragments-pool {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 20px;
-            border: 2px dashed #8b755d;
-            border-radius: 8px;
-            background: rgba(139, 117, 93, 0.05);
-            min-height: 120px;
-            align-content: flex-start;
-        }
-
-        .assembly-board {
-            display: flex;
-            gap: 3px;
-            padding: 20px;
-            border: 2px solid #8b755d;
-            border-radius: 8px;
-            background: rgba(139, 117, 93, 0.1);
-            min-height: 120px;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .letter-fragment {
+        /* 第六關拼字遊戲樣式 */
+        .letter-tile {
             background: linear-gradient(135deg, #8b755d 0%, #a68968 100%);
             color: #f4e8d0;
-            border: 3px solid rgba(139, 117, 93, 0.6);
-            border-radius: 12px;
-            padding: 12px 16px;
-            font-size: 1.8em;
+            border: 2px solid rgba(139, 117, 93, 0.4);
+            border-radius: 8px;
+            padding: 15px 20px;
+            font-size: 1.5em;
             font-weight: bold;
             cursor: pointer;
             user-select: none;
             transition: all 0.3s ease;
-            box-shadow: 
-                0 4px 8px rgba(139, 117, 93, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            position: relative;
+            box-shadow: 0 2px 8px rgba(139, 117, 93, 0.3);
             min-width: 50px;
             text-align: center;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
 
-        .letter-fragment:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 
-                0 6px 15px rgba(139, 117, 93, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        .letter-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 117, 93, 0.4);
         }
 
-        .letter-fragment.assembled {
+        .letter-tile.placed {
             background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            border-color: rgba(46, 204, 113, 0.6);
+            border-color: rgba(46, 204, 113, 0.4);
         }
 
-        .letter-fragment.fragment-c { transform: rotate(-5deg); }
-        .letter-fragment.fragment-r { transform: rotate(3deg); }
-        .letter-fragment.fragment-e1 { transform: rotate(-2deg); }
-        .letter-fragment.fragment-a { transform: rotate(4deg); }
-        .letter-fragment.fragment-t { transform: rotate(-3deg); }
-        .letter-fragment.fragment-e2 { transform: rotate(2deg); }
-
-        .letter-fragment:hover.fragment-c,
-        .letter-fragment:hover.fragment-r,
-        .letter-fragment:hover.fragment-e1,
-        .letter-fragment:hover.fragment-a,
-        .letter-fragment:hover.fragment-t,
-        .letter-fragment:hover.fragment-e2 {
-            transform: translateY(-3px) scale(1.05) rotate(0deg);
-        }
-
-        .assembly-slot {
-            min-width: 55px;
-            min-height: 70px;
-            border: 3px dashed #8b755d;
-            border-radius: 12px;
+        .answer-slot {
+            min-width: 60px;
+            min-height: 60px;
+            border: 2px dashed #8b755d;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: rgba(139, 117, 93, 0.05);
             transition: all 0.3s ease;
-            position: relative;
         }
 
-        .assembly-slot.filled {
+        .answer-slot.filled {
             border-style: solid;
             background: rgba(139, 117, 93, 0.1);
         }
 
-        .assembly-slot:hover {
-            background: rgba(139, 117, 93, 0.15);
-            border-color: #a68968;
-        }
-
-        .assembly-slot::before {
-            content: attr(data-position);
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.7em;
-            color: #8b755d;
-            background: #f4e8d0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid rgba(139, 117, 93, 0.3);
+        .answer-slot:hover {
+            background: rgba(139, 117, 93, 0.1);
         }
 
         @media (max-width: 768px) {
@@ -834,14 +664,13 @@
                     </div>
                 </div>
 
-                <div class="level-card" onclick="openLevel(6)" id="levelCard6">
+                <div class="level-card" onclick="openLevel(6)">
                     <div class="level-header">
                         <div class="level-title">宇宙六 - 創造者的挑戰</div>
-                        <div class="level-status status-locked" id="status6">需要完成前五關</div>
+                        <div class="level-status status-available" id="status6">可探索</div>
                     </div>
                     <div class="level-description">
                         充滿創意和想像力的高小明，在神秘機器前接受創造者的最終試煉...
-                        <br><span style="color: #8b4513; font-style: italic;">※ 解鎖條件：完成宇宙一至宇宙五</span>
                     </div>
                 </div>
             </div>
@@ -1135,17 +964,6 @@
 
         // 打開關卡
         function openLevel(level) {
-            // 檢查宇宙六的解鎖狀態
-            if (level === 6) {
-                const requiredLevels = [1, 2, 3, 4, 5];
-                const completedRequiredLevels = requiredLevels.filter(l => completedLevels.has(l));
-                
-                if (completedRequiredLevels.length < 5) {
-                    alert(`宇宙六已被封印！\n\n你需要先完成前五個宇宙才能解鎖最終挑戰。\n\n目前進度：${completedRequiredLevels.length}/5 個宇宙已完成`);
-                    return;
-                }
-            }
-            
             loadProgress();
             document.getElementById('levelsGrid').classList.add('hidden');
             document.getElementById('levelDetail').style.display = 'block';
@@ -1303,42 +1121,31 @@
         function checkUniverse4Answer() { checkUniverseAnswer(4, universe4Questions); }
         function checkUniverse5Answer() { checkUniverseAnswer(5, universe5Questions); }
 
-        // 顯示一般關卡（第六關的碎片拼圖遊戲）
+        // 顯示一般關卡（第六關的拼字遊戲）
         function showGeneralLevel(level) {
             const content = levelContents[level];
             const isCompleted = completedLevels.has(level);
             
             if (level === 6) {
-                // 第六關的特殊碎片拼圖遊戲
+                // 第六關的特殊拼字遊戲
                 let gameHTML = '';
                 
                 if (!isCompleted) {
                     gameHTML = `
                         <div class="puzzle-question">
-                            <strong>創造者的終極試煉</strong><br>
-                            散落的字母碎片蘊含著創造的力量！將它們重新組合，拼湊出創造的真諦！
+                            <strong>創造者的拼字挑戰</strong><br>
+                            將下方的字母拖拽或點擊來重新排列，拼出正確的英文單字！
                         </div>
-                        <div id="fragmentPuzzleGame">
-                            <div class="puzzle-container">
-                                <div class="fragments-area">
-                                    <div class="area-title">🧩 散落的碎片</div>
-                                    <div id="fragmentsPool" class="fragments-pool">
-                                        <!-- 碎片會在這裡動態生成 -->
-                                    </div>
-                                </div>
-                                <div class="assembly-area">
-                                    <div class="area-title">✨ 組裝區域</div>
-                                    <div id="assemblyBoard" class="assembly-board">
-                                        <!-- 組裝槽會在這裡動態生成 -->
-                                    </div>
-                                </div>
+                        <div id="wordPuzzleGame">
+                            <div id="letterPool" style="display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; justify-content: center;">
+                                <!-- 字母池會在這裡動態生成 -->
+                            </div>
+                            <div id="answerArea" style="display: flex; gap: 5px; margin: 20px 0; justify-content: center; min-height: 60px; padding: 10px; border: 2px dashed #8b755d; border-radius: 8px; align-items: center;">
+                                <!-- 答案區域 -->
                             </div>
                             <div style="text-align: center; margin: 20px 0;">
-                                <button class="submit-btn" onclick="checkFragmentPuzzle()" style="width: auto; padding: 12px 30px; margin-right: 15px;">🔍 檢查組合</button>
-                                <button class="back-btn" onclick="resetFragmentPuzzle()" style="padding: 12px 25px;">🔄 重新排列</button>
-                            </div>
-                            <div style="text-align: center; color: #8b755d; font-size: 0.9em; margin-top: 10px;">
-                                💡 提示：點擊碎片將它們放入組裝區域，再次點擊可以移回碎片池
+                                <button class="submit-btn" onclick="checkWordPuzzle()" style="width: auto; padding: 10px 30px; margin-right: 10px;">檢查答案</button>
+                                <button class="back-btn" onclick="resetWordPuzzle()" style="padding: 10px 20px;">重新排列</button>
                             </div>
                         </div>
                         <div class="error-message" id="error6"></div>
@@ -1350,12 +1157,9 @@
                             <strong>第六關已完成！</strong><br>
                             你成功拼出了「CREATE」！真正的創造者懂得將散亂的元素重新組合成有意義的整體。
                         </div>
-                        <div style="text-align: center; margin: 30px 0; padding: 25px; background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(46, 204, 113, 0.05) 100%); border-radius: 12px; border: 2px solid rgba(46, 204, 113, 0.3);">
-                            <div style="font-size: 3em; font-weight: bold; color: #27ae60; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(46, 204, 113, 0.3);">CREATE</div>
-                            <div style="color: #5a4a3a; font-size: 1.1em; line-height: 1.6;">
-                                <strong>創造</strong> - 這就是多元宇宙存在的意義<br>
-                                <em>將混沌化為秩序，將想像化為現實</em>
-                            </div>
+                        <div style="text-align: center; margin: 20px 0; padding: 20px; background: rgba(46, 204, 113, 0.1); border-radius: 8px; border: 1px solid rgba(46, 204, 113, 0.2);">
+                            <div style="font-size: 2em; font-weight: bold; color: #27ae60; margin-bottom: 10px;">CREATE</div>
+                            <div style="color: #5a4a3a;">創造 - 這就是多元宇宙存在的意義</div>
                         </div>
                         <button class="start-btn" onclick="backToGrid()" style="margin-top: 20px; width: 100%;">
                             繼續探索其他多元宇宙
@@ -1380,7 +1184,7 @@
                 `;
                 
                 if (!isCompleted) {
-                    initFragmentPuzzle();
+                    initWordPuzzle();
                 }
             } else {
                 // 其他一般關卡
@@ -1434,31 +1238,10 @@
             const cardElement = statusElement.closest('.level-card');
             cardElement.classList.add('completed');
             
-            // 檢查是否解鎖宇宙六
-            updateLevel6Status();
-            
             updateProgress();
             
             if (completedLevels.size === 6) {
                 setTimeout(() => endGame(true), 1000);
-            }
-        }
-
-        // 更新宇宙六的解鎖狀態
-        function updateLevel6Status() {
-            const requiredLevels = [1, 2, 3, 4, 5];
-            const completedRequiredLevels = requiredLevels.filter(l => completedLevels.has(l));
-            const level6Card = document.getElementById('levelCard6');
-            const level6Status = document.getElementById('status6');
-            
-            if (completedRequiredLevels.length >= 5 && !completedLevels.has(6)) {
-                level6Status.textContent = '可探索';
-                level6Status.className = 'level-status status-available';
-                level6Card.classList.remove('locked');
-            } else if (!completedLevels.has(6)) {
-                level6Status.textContent = `需要完成前五關 (${completedRequiredLevels.length}/5)`;
-                level6Status.className = 'level-status status-locked';
-                level6Card.classList.add('locked');
             }
         }
 
@@ -1543,117 +1326,96 @@
             }
         }
 
-        function renderFragmentPuzzle() {
-            const fragmentsPool = document.getElementById('fragmentsPool');
-            const assemblyBoard = document.getElementById('assemblyBoard');
+        // 第六關拼字遊戲相關函數
+        let currentWord = [];
+        let availableLetters = [];
+
+        function initWordPuzzle() {
+            const targetWord = 'CREATE';
+            availableLetters = targetWord.split('').sort(() => Math.random() - 0.5); // 隨機打亂
+            currentWord = [];
             
-            // 渲染可用碎片
-            fragmentsPool.innerHTML = '';
-            availableFragments.forEach((fragment, index) => {
-                const fragmentElement = document.createElement('div');
-                fragmentElement.className = `letter-fragment ${fragment.class}`;
-                fragmentElement.textContent = fragment.letter;
-                fragmentElement.onclick = () => selectFragment(index);
-                fragmentElement.title = `點擊將 "${fragment.letter}" 放入組裝區域`;
-                fragmentsPool.appendChild(fragmentElement);
+            renderWordPuzzle();
+        }
+
+        function renderWordPuzzle() {
+            const letterPool = document.getElementById('letterPool');
+            const answerArea = document.getElementById('answerArea');
+            
+            // 渲染可用字母
+            letterPool.innerHTML = '';
+            availableLetters.forEach((letter, index) => {
+                const letterTile = document.createElement('div');
+                letterTile.className = 'letter-tile';
+                letterTile.textContent = letter;
+                letterTile.onclick = () => selectLetter(index);
+                letterPool.appendChild(letterTile);
             });
             
-            // 渲染組裝區域
-            assemblyBoard.innerHTML = '';
+            // 渲染答案區域
+            answerArea.innerHTML = '';
             for (let i = 0; i < 6; i++) { // CREATE 有6個字母
                 const slot = document.createElement('div');
-                slot.className = 'assembly-slot';
-                slot.setAttribute('data-position', i + 1);
-                
-                if (assembledWord[i]) {
-                    const fragmentElement = document.createElement('div');
-                    fragmentElement.className = `letter-fragment assembled ${assembledWord[i].class}`;
-                    fragmentElement.textContent = assembledWord[i].letter;
-                    fragmentElement.onclick = () => removeFragment(i);
-                    fragmentElement.title = `點擊將 "${assembledWord[i].letter}" 移回碎片池`;
-                    slot.appendChild(fragmentElement);
+                slot.className = 'answer-slot';
+                if (currentWord[i]) {
+                    const letterTile = document.createElement('div');
+                    letterTile.className = 'letter-tile placed';
+                    letterTile.textContent = currentWord[i];
+                    letterTile.onclick = () => removeLetter(i);
+                    slot.appendChild(letterTile);
                     slot.classList.add('filled');
                 }
-                assemblyBoard.appendChild(slot);
+                answerArea.appendChild(slot);
             }
         }
 
-        function selectFragment(index) {
-            if (assembledWord.length < 6) {
-                const fragment = availableFragments[index];
-                assembledWord.push(fragment);
-                availableFragments.splice(index, 1);
-                renderFragmentPuzzle();
+        function selectLetter(index) {
+            if (currentWord.length < 6) {
+                const letter = availableLetters[index];
+                currentWord.push(letter);
+                availableLetters.splice(index, 1);
+                renderWordPuzzle();
             }
         }
 
-        function removeFragment(index) {
-            const fragment = assembledWord[index];
-            availableFragments.push(fragment);
-            assembledWord.splice(index, 1);
-            renderFragmentPuzzle();
+        function removeLetter(index) {
+            const letter = currentWord[index];
+            availableLetters.push(letter);
+            currentWord.splice(index, 1);
+            renderWordPuzzle();
         }
 
-        function checkFragmentPuzzle() {
-            const userWord = assembledWord.map(f => f.letter).join('');
+        function checkWordPuzzle() {
+            const userWord = currentWord.join('');
             const errorDiv = document.getElementById('error6');
             const successDiv = document.getElementById('success6');
             
             if (userWord.length !== 6) {
-                errorDiv.textContent = '請將所有碎片都放入組裝區域！還需要 ' + (6 - userWord.length) + ' 個碎片。';
+                errorDiv.textContent = '請將所有字母都放入答案區域！';
                 errorDiv.style.display = 'block';
                 successDiv.style.display = 'none';
-                setTimeout(() => errorDiv.style.display = 'none', 4000);
+                setTimeout(() => errorDiv.style.display = 'none', 3000);
                 return;
             }
             
             if (userWord === 'CREATE') {
-                successDiv.innerHTML = '🎉 <strong>恭喜！</strong>你成功重組了創造的力量！<br>「CREATE」- 宇宙六完成！ ✨';
+                successDiv.textContent = '恭喜！你成功拼出了「CREATE」！宇宙六完成！';
                 successDiv.style.display = 'block';
                 errorDiv.style.display = 'none';
                 
-                // 添加完成動畫效果
-                const fragments = document.querySelectorAll('.letter-fragment.assembled');
-                fragments.forEach((fragment, index) => {
-                    setTimeout(() => {
-                        fragment.style.transform = 'scale(1.2) rotate(360deg)';
-                        fragment.style.background = 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)';
-                    }, index * 200);
-                });
-                
                 setTimeout(() => {
                     completeLevel(6);
-                }, 3000);
+                }, 2000);
             } else {
-                errorDiv.innerHTML = `💭 組合「${userWord}」不正確！<br>請重新排列碎片，尋找創造的真諦...`;
+                errorDiv.textContent = '字母順序不正確，請重新排列！';
                 errorDiv.style.display = 'block';
                 successDiv.style.display = 'none';
-                setTimeout(() => errorDiv.style.display = 'none', 4000);
+                setTimeout(() => errorDiv.style.display = 'none', 3000);
             }
         }
 
-        function resetFragmentPuzzle() {
-            initFragmentPuzzle();
-        }
-
-        // 開始遊戲時更新宇宙六狀態
-        function startGame() {
-            loadProgress();
-            gameStarted = true;
-            document.getElementById('introPage').classList.add('hidden');
-            document.getElementById('gameContainer').classList.remove('hidden');
-            
-            // 確保關卡選擇頁面顯示
-            document.getElementById('levelsGrid').classList.remove('hidden');
-            document.getElementById('levelDetail').style.display = 'none';
-            
-            // 更新宇宙六的解鎖狀態
-            updateLevel6Status();
-            
-            if (completedLevels.size < 6 && !gameTimer) {
-                startTimer();
-            }
-            updateProgress();
+        function resetWordPuzzle() {
+            initWordPuzzle();
         }
     </script>
 </body>
