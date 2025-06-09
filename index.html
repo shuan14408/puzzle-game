@@ -1,4 +1,46 @@
-<!DOCTYPE html>
+// 第六關碎片拼圖遊戲相關函數
+        let assembledWord = [];
+        let availableFragments = [];
+
+        function initFragmentPuzzle() {
+            const targetWord = 'CREATE';
+            // 創建帶有ID的碎片對象，包含額外的視覺效果
+            availableFragments = targetWord.split('').map((letter, index) => ({
+                id: `fragment-${letter.toLowerCase()}${letter === 'E' ? (index === 2 ? '1' : '2') : ''}`,
+                letter: letter,
+                class: `fragment-${letter.toLowerCase()}${letter === 'E' ? (index === 2 ? '1' : '2') : ''}`
+            }));
+            
+            // 隨機打亂碎片
+            availableFragments.sort(() => Math.random() - 0.5);
+            assembledWord = [];
+            
+            renderFragmentPuzzle();
+        }
+
+        function renderFragmentPuzzle() {
+            const fragmentsPool = document.getElementById('fragmentsPool');
+            const assemblyBoard = document.getElementById('assemblyBoard');
+            
+            // 渲染可用碎片
+            fragmentsPool.innerHTML = '';
+            availableFragments.forEach((fragment, index) => {
+                const fragmentElement = document.createElement('div');
+                fragmentElement.className = `letter-fragment ${fragment.class}`;
+                fragmentElement.textContent = fragment.letter;
+                fragmentElement.onclick = () => selectFragment(index);
+                fragmentElement.title = `點擊將 "${fragment.letter}" 放入組裝區域`;
+                fragmentsPool.appendChild(fragmentElement);
+            });
+            
+            // 渲染組裝區域
+            assemblyBoard.innerHTML = '';
+            for (let i = 0; i < 6; i++) { // CREATE 有6個字母
+                const slot = document.createElement('div');
+                slot.className = 'assembly-slot';
+                slot.setAttribute('data-position', i + 1);
+                
+                <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -239,12 +281,6 @@
             border-color: rgba(184, 92, 71, 0.3);
         }
 
-        .status-completed {
-            background: rgba(166, 137, 104, 0.2);
-            color: #a68968;
-            border-color: rgba(166, 137, 104, 0.4);
-        }
-
         .level-card.locked {
             opacity: 0.6;
             cursor: not-allowed;
@@ -306,6 +342,23 @@
             background: rgba(139, 117, 93, 0.3);
         }
 
+        .reset-btn {
+            background: rgba(184, 92, 71, 0.2);
+            color: #8b4513;
+            border: 1px solid rgba(184, 92, 71, 0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .reset-btn:hover {
+            background: rgba(184, 92, 71, 0.3);
+        }
+
         .story-section {
             background: rgba(139, 117, 93, 0.1);
             padding: 20px;
@@ -336,6 +389,45 @@
             border-radius: 8px;
             border-left: 4px solid #8b755d;
             border: 1px solid rgba(139, 117, 93, 0.2);
+        }
+
+        /* 圖片相關樣式 */
+        .puzzle-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(139, 117, 93, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 2px solid rgba(139, 117, 93, 0.2);
+        }
+
+        .puzzle-image:hover {
+            transform: scale(1.02);
+        }
+
+        .puzzle-image.enlarged {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.1);
+            z-index: 1000;
+            max-width: 90vw;
+            max-height: 90vh;
+            border: 5px solid white;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 999;
+            display: none;
         }
 
         .question-progress {
@@ -396,6 +488,33 @@
             transform: none;
         }
 
+        /* 成功頁面 - 完全隱藏在初始狀態 */
+        .success-page {
+            display: none !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #f4e8d0 0%, #e6d3b0 50%, #d4c19c 100%);
+            z-index: 9999;
+            text-align: center;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .success-content {
+            background: rgba(244, 232, 208, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 
+                0 8px 32px rgba(139, 117, 93, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(139, 117, 93, 0.3);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
         .error-message {
             background: rgba(184, 92, 71, 0.2);
             color: #8b4513;
@@ -427,6 +546,30 @@
                 0 2px 8px rgba(139, 117, 93, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.3);
             border: 1px solid rgba(139, 117, 93, 0.3);
+        }
+
+        .status-completed {
+            background: rgba(166, 137, 104, 0.2);
+            color: #a68968;
+            border-color: rgba(166, 137, 104, 0.4);
+        }
+
+        .status-locked {
+            background: rgba(184, 92, 71, 0.1);
+            color: #8b4513;
+            border-color: rgba(184, 92, 71, 0.3);
+        }
+
+        .level-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .level-card.locked:hover {
+            transform: none;
+            box-shadow: 
+                0 4px 15px rgba(139, 117, 93, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
         /* 碎片拼圖遊戲樣式 */
@@ -567,33 +710,6 @@
             padding: 2px 6px;
             border-radius: 4px;
             border: 1px solid rgba(139, 117, 93, 0.3);
-        }
-
-        /* 成功頁面 */
-        .success-page {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, #f4e8d0 0%, #e6d3b0 50%, #d4c19c 100%);
-            z-index: 9999;
-            text-align: center;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .success-content {
-            background: rgba(244, 232, 208, 0.95);
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 
-                0 8px 32px rgba(139, 117, 93, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(139, 117, 93, 0.3);
-            max-width: 600px;
-            margin: 0 auto;
         }
 
         @media (max-width: 768px) {
@@ -738,21 +854,24 @@
         </div>
     </div>
 
-    <!-- 成功頁面 -->
+    <!-- 成功頁面 - 完全獨立於主容器 -->
     <div class="success-page" id="successPage">
         <div class="success-content">
-            <h1>🎉 恭喜過關！</h1>
+            <h1>恭喜過關！</h1>
             <h2>多元宇宙的高小明們都得救了！</h2>
             <p>你成功解開了所有謎團，拯救了六個宇宙的高小明！</p>
             <div id="finalTime"></div>
             <div style="margin-top: 30px; padding: 20px; background: rgba(139, 117, 93, 0.1); border-radius: 10px; border: 1px solid rgba(139, 117, 93, 0.2);">
-                <p>113學年度解謎成果 下台一鞠躬</p>
-                <p>同德國小創造力資優班</p>
-                <p>歡迎你/妳的加入！</p>
+                <p>恭喜你完成了這趟多元宇宙的奇幻冒險！</p>
+                <p>所有宇宙的高小明都因為你的幫助而得救了！</p>
+                <p>你展現了卓越的解謎能力和堅持不懈的精神！</p>
             </div>
             <button class="start-btn" onclick="resetGame()" style="margin-top: 20px;">重新開始遊戲</button>
         </div>
     </div>
+
+    <!-- 圖片放大覆蓋層 -->
+    <div class="overlay" id="overlay" onclick="closeEnlargedImage()"></div>
 
     <script>
         // 遊戲狀態
@@ -765,10 +884,35 @@
         let currentLevel4Question = 0;
         let currentLevel5Question = 0;
         let gameStarted = false;
-        
-        // 第六關碎片拼圖遊戲相關變數
-        let assembledWord = [];
-        let availableFragments = [];
+
+        // 進度保存和恢復
+        function saveProgress() {
+            const progress = {
+                completedLevels: Array.from(completedLevels),
+                currentLevel1Question: currentLevel1Question,
+                currentLevel2Question: currentLevel2Question,
+                currentLevel3Question: currentLevel3Question,
+                currentLevel4Question: currentLevel4Question,
+                currentLevel5Question: currentLevel5Question,
+                timeLeft: timeLeft
+            };
+            window.gameProgress = progress;
+        }
+
+        function loadProgress() {
+            if (window.gameProgress) {
+                const progress = window.gameProgress;
+                completedLevels = new Set(progress.completedLevels);
+                currentLevel1Question = progress.currentLevel1Question || 0;
+                currentLevel2Question = progress.currentLevel2Question || 0;
+                currentLevel3Question = progress.currentLevel3Question || 0;
+                currentLevel4Question = progress.currentLevel4Question || 0;
+                currentLevel5Question = progress.currentLevel5Question || 0;
+                timeLeft = progress.timeLeft || 40 * 60;
+                return true;
+            }
+            return false;
+        }
 
         // 答案定義
         const answers = {
@@ -780,35 +924,35 @@
             6: "CREATE"
         };
 
-        // 題目定義 (示例圖片路徑，實際使用時需要替換為真實圖片)
+        // 題目定義
         const universe1Questions = [
-            { text: "高小明失蹤前最後出現的地點在哪裡？", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f4e8d0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 1%3C/text%3E%3C/svg%3E", answer: "頂樓" },
-            { text: "找出能夠幫助尋找高小明的重要工具", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23e6d3b0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 2%3C/text%3E%3C/svg%3E", answer: "吸塵器" },
-            { text: "破解救援計畫的最終密碼", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23d4c19c'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 3%3C/text%3E%3C/svg%3E", answer: "C" }
+            { text: "高小明失蹤前最後出現的地點在哪裡？", image: "ans05_001.png", answer: "頂樓" },
+            { text: "找出能夠幫助尋找高小明的重要工具", image: "ans05_002.png", answer: "吸塵器" },
+            { text: "破解救援計畫的最終密碼", image: "ans05_003.png", answer: "C" }
         ];
 
         const universe2Questions = [
-            { text: "觀察圖片中的線索，找出隱藏的數字密碼", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f4e8d0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 2-1%3C/text%3E%3C/svg%3E", answer: "2786" },
-            { text: "仔細研究圖片，破解其中的字母數字組合", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23e6d3b0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 2-2%3C/text%3E%3C/svg%3E", answer: "H8N4" },
-            { text: "看懂圖片想要表達的含義是什麼？", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23d4c19c'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 2-3%3C/text%3E%3C/svg%3E", answer: "重逢" }
+            { text: "觀察圖片中的線索，找出隱藏的數字密碼", image: "ans01_001.png", answer: "2786" },
+            { text: "仔細研究圖片，破解其中的字母數字組合", image: "ans01_002.png", answer: "H8N4" },
+            { text: "看懂圖片想要表達的含義是什麼？", image: "ans01_003.png", answer: "重逢" }
         ];
 
         const universe3Questions = [
-            { text: "突然出現五隻小雞！排成一排似乎在提示什麼？", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f4e8d0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 3-1%3C/text%3E%3C/svg%3E", answer: "25213" },
-            { text: "觀察圖片中編號所對應的小雞，牠的頭是什麼顏色？顏色似乎就是線索！", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23e6d3b0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 3-2%3C/text%3E%3C/svg%3E", answer: "黃色" },
-            { text: "要實現願望的秘訣是什麼？", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23d4c19c'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 3-3%3C/text%3E%3C/svg%3E", answer: "相信" }
+            { text: "突然出現五隻小雞！排成一排似乎在提示什麼？", image: "ans_02_001.png", answer: "25213" },
+            { text: "觀察圖片中編號所對應的小雞，牠的頭是什麼顏色？顏色似乎就是線索！", image: "ans_02_002.png", answer: "黃色" },
+            { text: "要實現願望的秘訣是什麼？", image: "ans_02_003.png", answer: "相信" }
         ];
 
         const universe4Questions = [
-            { text: "外星雞告訴高小明一個重要的顏色線索，是什麼顏色？", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f4e8d0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 4-1%3C/text%3E%3C/svg%3E", answer: "藍" },
-            { text: "外星雞指向天空，牠想說什麼方向？", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23e6d3b0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 4-2%3C/text%3E%3C/svg%3E", answer: "UP" },
-            { text: "破解外星雞留下的神秘數字密碼", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23d4c19c'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 4-3%3C/text%3E%3C/svg%3E", answer: "2227" }
+            { text: "外星雞告訴高小明一個重要的顏色線索，是什麼顏色？", image: "ans03_001.png", answer: "藍" },
+            { text: "外星雞指向天空，牠想說什麼方向？", image: "ans03_002.png", answer: "UP" },
+            { text: "破解外星雞留下的神秘數字密碼", image: "ans03_003.png", answer: "2227" }
         ];
 
         const universe5Questions = [
-            { text: "龜仙人的真實身份是什麼？仔細觀察圖片中的線索", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23f4e8d0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 5-1%3C/text%3E%3C/svg%3E", answer: "普通龜" },
-            { text: "龜仙人還沒找到的東西是什麼？", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23e6d3b0'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 5-2%3C/text%3E%3C/svg%3E", answer: "青江菜" },
-            { text: "破解最終的字母密碼，拯救高小明！", image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23d4c19c'/%3E%3Ctext x='200' y='150' text-anchor='middle' font-size='24' fill='%238b755d'%3E謎題圖片 5-3%3C/text%3E%3C/svg%3E", answer: "R" }
+            { text: "龜仙人的真實身份是什麼？仔細觀察圖片中的線索", image: "ans04_001.png", answer: "普通龜" },
+            { text: "龜仙人還沒找到的東西是什麼？", image: "ans04_002.png", answer: "青江菜" },
+            { text: "破解最終的字母密碼，拯救高小明！", image: "ans04_003.png", answer: "R" }
         ];
 
         // 關卡內容
@@ -892,118 +1036,9 @@
             }
         };
 
-        // 第六關碎片拼圖遊戲相關函數
-        function initFragmentPuzzle() {
-            const targetWord = 'CREATE';
-            // 創建帶有ID的碎片對象，包含額外的視覺效果
-            availableFragments = targetWord.split('').map((letter, index) => ({
-                id: `fragment-${letter.toLowerCase()}${letter === 'E' ? (index === 2 ? '1' : '2') : ''}`,
-                letter: letter,
-                class: `fragment-${letter.toLowerCase()}${letter === 'E' ? (index === 2 ? '1' : '2') : ''}`
-            }));
-            
-            // 隨機打亂碎片
-            availableFragments.sort(() => Math.random() - 0.5);
-            assembledWord = [];
-            
-            renderFragmentPuzzle();
-        }
-
-        function renderFragmentPuzzle() {
-            const fragmentsPool = document.getElementById('fragmentsPool');
-            const assemblyBoard = document.getElementById('assemblyBoard');
-            
-            // 渲染可用碎片
-            fragmentsPool.innerHTML = '';
-            availableFragments.forEach((fragment, index) => {
-                const fragmentElement = document.createElement('div');
-                fragmentElement.className = `letter-fragment ${fragment.class}`;
-                fragmentElement.textContent = fragment.letter;
-                fragmentElement.onclick = () => selectFragment(index);
-                fragmentElement.title = `點擊將 "${fragment.letter}" 放入組裝區域`;
-                fragmentsPool.appendChild(fragmentElement);
-            });
-            
-            // 渲染組裝區域
-            assemblyBoard.innerHTML = '';
-            for (let i = 0; i < 6; i++) { // CREATE 有6個字母
-                const slot = document.createElement('div');
-                slot.className = 'assembly-slot';
-                slot.setAttribute('data-position', i + 1);
-                
-                if (assembledWord[i]) {
-                    const fragmentElement = document.createElement('div');
-                    fragmentElement.className = `letter-fragment assembled ${assembledWord[i].class}`;
-                    fragmentElement.textContent = assembledWord[i].letter;
-                    fragmentElement.onclick = () => removeFragment(i);
-                    fragmentElement.title = `點擊將 "${assembledWord[i].letter}" 移回碎片池`;
-                    slot.appendChild(fragmentElement);
-                    slot.classList.add('filled');
-                }
-                assemblyBoard.appendChild(slot);
-            }
-        }
-
-        function selectFragment(index) {
-            if (assembledWord.length < 6) {
-                const fragment = availableFragments[index];
-                assembledWord.push(fragment);
-                availableFragments.splice(index, 1);
-                renderFragmentPuzzle();
-            }
-        }
-
-        function removeFragment(index) {
-            const fragment = assembledWord[index];
-            availableFragments.push(fragment);
-            assembledWord.splice(index, 1);
-            renderFragmentPuzzle();
-        }
-
-        function checkFragmentPuzzle() {
-            const userWord = assembledWord.map(f => f.letter).join('');
-            const errorDiv = document.getElementById('error6');
-            const successDiv = document.getElementById('success6');
-            
-            if (userWord.length !== 6) {
-                errorDiv.textContent = '請將所有碎片都放入組裝區域！還需要 ' + (6 - userWord.length) + ' 個碎片。';
-                errorDiv.style.display = 'block';
-                successDiv.style.display = 'none';
-                setTimeout(() => errorDiv.style.display = 'none', 4000);
-                return;
-            }
-            
-            if (userWord === 'CREATE') {
-                successDiv.innerHTML = '🎉 <strong>恭喜！</strong>你成功重組了創造的力量！<br>「CREATE」- 宇宙六完成！ ✨';
-                successDiv.style.display = 'block';
-                errorDiv.style.display = 'none';
-                
-                // 添加完成動畫效果
-                const fragments = document.querySelectorAll('.letter-fragment.assembled');
-                fragments.forEach((fragment, index) => {
-                    setTimeout(() => {
-                        fragment.style.transform = 'scale(1.2) rotate(360deg)';
-                        fragment.style.background = 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)';
-                    }, index * 200);
-                });
-                
-                setTimeout(() => {
-                    completeLevel(6);
-                }, 3000);
-            } else {
-                errorDiv.innerHTML = `💭 組合「${userWord}」不正確！<br>請重新排列碎片，尋找創造的真諦...`;
-                errorDiv.style.display = 'block';
-                successDiv.style.display = 'none';
-                setTimeout(() => errorDiv.style.display = 'none', 4000);
-            }
-        }
-
-        function resetFragmentPuzzle() {
-            initFragmentPuzzle();
-        }
-
         // 開始遊戲
         function startGame() {
+            loadProgress();
             gameStarted = true;
             document.getElementById('introPage').classList.add('hidden');
             document.getElementById('gameContainer').classList.remove('hidden');
@@ -1011,9 +1046,6 @@
             // 確保關卡選擇頁面顯示
             document.getElementById('levelsGrid').classList.remove('hidden');
             document.getElementById('levelDetail').style.display = 'none';
-            
-            // 更新宇宙六的解鎖狀態
-            updateLevel6Status();
             
             if (completedLevels.size < 6 && !gameTimer) {
                 startTimer();
@@ -1055,6 +1087,11 @@
                 }
             }
             
+            const progressInfo = document.getElementById('progressInfo');
+            if (progressInfo) {
+                progressInfo.textContent = '';
+            }
+            
             // 隱藏成功頁面和遊戲容器
             document.getElementById('successPage').style.display = 'none';
             document.getElementById('gameContainer').classList.add('hidden');
@@ -1062,6 +1099,16 @@
             document.getElementById('levelsGrid').classList.remove('hidden');
             document.getElementById('introPage').classList.remove('hidden');
             document.getElementById('timeDisplay').style.color = '#8b755d';
+        }
+
+        // 更新首頁進度顯示
+        function updateIntroProgress() {
+            const progressInfo = document.getElementById('progressInfo');
+            if (completedLevels.size > 0) {
+                progressInfo.textContent = `已完成 ${completedLevels.size}/6 個宇宙，繼續你的冒險！`;
+            } else {
+                progressInfo.textContent = '';
+            }
         }
 
         // 計時器
@@ -1099,6 +1146,7 @@
                 }
             }
             
+            loadProgress();
             document.getElementById('levelsGrid').classList.add('hidden');
             document.getElementById('levelDetail').style.display = 'block';
             
@@ -1134,7 +1182,7 @@
                     <div class="puzzle-question">
                         <strong>謎題：</strong>${currentQ.text}
                     </div>
-                    <img src="${currentQ.image}" class="puzzle-image" onclick="enlargeImage(this)" alt="謎題圖片" style="max-width: 100%; height: auto; border-radius: 10px; margin: 20px 0; box-shadow: 0 5px 15px rgba(139, 117, 93, 0.3); cursor: pointer; transition: transform 0.3s ease; border: 2px solid rgba(139, 117, 93, 0.2);">
+                    <img src="${currentQ.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片">
                     <input type="text" class="answer-input" id="answer${level}" placeholder="請輸入答案">
                     <button class="submit-btn" onclick="${checkFunction}()">提交答案</button>
                     <div class="error-message" id="error${level}"></div>
@@ -1158,7 +1206,7 @@
                                 <span style="font-size: 0.8em; color: #a68968;" id="toggle${level}_${index}">▼ 展開</span>
                             </div>
                             <div id="detail${level}_${index}" style="display: none;">
-                                <img src="${q.image}" class="puzzle-image" onclick="enlargeImage(this)" alt="謎題圖片" style="margin: 10px 0; max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 5px 15px rgba(139, 117, 93, 0.3); cursor: pointer; border: 2px solid rgba(139, 117, 93, 0.2);">
+                                <img src="${q.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片" style="margin: 10px 0;">
                                 <div style="color: #27ae60; font-weight: bold; padding: 10px; background: rgba(46, 204, 113, 0.1); border-radius: 5px; border: 1px solid rgba(46, 204, 113, 0.2);">答案：${q.answer}</div>
                             </div>
                         </div>
@@ -1334,6 +1382,44 @@
                 if (!isCompleted) {
                     initFragmentPuzzle();
                 }
+            } else {
+                // 其他一般關卡
+                document.getElementById('levelContent').innerHTML = `
+                    <div class="level-header">
+                        <div class="level-title">${content.title}</div>
+                        <div class="level-status ${completedLevels.has(level) ? 'status-completed' : 'status-available'}">
+                            ${completedLevels.has(level) ? '已完成' : '探索中'}
+                        </div>
+                    </div>
+                    <div class="story-section">
+                        <div class="story-title">故事背景</div>
+                        <p style="white-space: pre-line;">${content.story}</p>
+                    </div>
+                    <div class="puzzle-content">
+                        <div class="puzzle-question">
+                            <strong>謎題：</strong>${content.question}
+                        </div>
+                        <input type="text" class="answer-input" id="answer${level}" placeholder="請輸入答案">
+                        <button class="submit-btn" onclick="checkAnswer(${level})">提交答案</button>
+                        <div class="error-message" id="error${level}"></div>
+                        <div class="success-message" id="success${level}"></div>
+                    </div>
+                `;
+            }
+        }
+
+        // 檢查一般關卡答案
+        function checkAnswer(level) {
+            const userAnswer = document.getElementById(`answer${level}`).value.trim();
+            const correctAnswer = answers[level];
+            
+            if (userAnswer === correctAnswer) {
+                completeLevel(level);
+            } else {
+                const errorDiv = document.getElementById(`error${level}`);
+                errorDiv.textContent = '答案不正確，請再試一次！';
+                errorDiv.style.display = 'block';
+                setTimeout(() => errorDiv.style.display = 'none', 3000);
             }
         }
 
@@ -1401,41 +1487,29 @@
                 document.getElementById('successPage').style.display = 'flex';
             } else {
                 alert('時間到！遊戲結束。');
-                resetGame();
+                backToStory();
             }
         }
 
         // 圖片放大功能
-        function enlargeImage(img) {
-            // 創建放大版本
-            const overlay = document.createElement('div');
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.8);
-                z-index: 1000;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                cursor: pointer;
-            `;
+        function enlargeImage() {
+            const image = document.querySelector('.puzzle-image');
+            const overlay = document.getElementById('overlay');
             
-            const enlargedImg = img.cloneNode();
-            enlargedImg.style.cssText = `
-                max-width: 90vw;
-                max-height: 90vh;
-                border: 5px solid white;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-                border-radius: 10px;
-            `;
+            if (image) {
+                image.classList.add('enlarged');
+                overlay.style.display = 'block';
+            }
+        }
+
+        function closeEnlargedImage() {
+            const image = document.querySelector('.puzzle-image');
+            const overlay = document.getElementById('overlay');
             
-            overlay.appendChild(enlargedImg);
-            document.body.appendChild(overlay);
-            
-            overlay.onclick = () => document.body.removeChild(overlay);
+            if (image) {
+                image.classList.remove('enlarged');
+                overlay.style.display = 'none';
+            }
         }
 
         // Enter鍵事件
@@ -1450,6 +1524,7 @@
                     else if (level === 3) checkUniverse3Answer();
                     else if (level === 4) checkUniverse4Answer();
                     else if (level === 5) checkUniverse5Answer();
+                    else checkAnswer(level);
                 }
             }
         });
@@ -1468,9 +1543,118 @@
             }
         }
 
-        // 初始化遊戲
-        updateLevel6Status();
-        updateProgress();
+        function renderFragmentPuzzle() {
+            const fragmentsPool = document.getElementById('fragmentsPool');
+            const assemblyBoard = document.getElementById('assemblyBoard');
+            
+            // 渲染可用碎片
+            fragmentsPool.innerHTML = '';
+            availableFragments.forEach((fragment, index) => {
+                const fragmentElement = document.createElement('div');
+                fragmentElement.className = `letter-fragment ${fragment.class}`;
+                fragmentElement.textContent = fragment.letter;
+                fragmentElement.onclick = () => selectFragment(index);
+                fragmentElement.title = `點擊將 "${fragment.letter}" 放入組裝區域`;
+                fragmentsPool.appendChild(fragmentElement);
+            });
+            
+            // 渲染組裝區域
+            assemblyBoard.innerHTML = '';
+            for (let i = 0; i < 6; i++) { // CREATE 有6個字母
+                const slot = document.createElement('div');
+                slot.className = 'assembly-slot';
+                slot.setAttribute('data-position', i + 1);
+                
+                if (assembledWord[i]) {
+                    const fragmentElement = document.createElement('div');
+                    fragmentElement.className = `letter-fragment assembled ${assembledWord[i].class}`;
+                    fragmentElement.textContent = assembledWord[i].letter;
+                    fragmentElement.onclick = () => removeFragment(i);
+                    fragmentElement.title = `點擊將 "${assembledWord[i].letter}" 移回碎片池`;
+                    slot.appendChild(fragmentElement);
+                    slot.classList.add('filled');
+                }
+                assemblyBoard.appendChild(slot);
+            }
+        }
+
+        function selectFragment(index) {
+            if (assembledWord.length < 6) {
+                const fragment = availableFragments[index];
+                assembledWord.push(fragment);
+                availableFragments.splice(index, 1);
+                renderFragmentPuzzle();
+            }
+        }
+
+        function removeFragment(index) {
+            const fragment = assembledWord[index];
+            availableFragments.push(fragment);
+            assembledWord.splice(index, 1);
+            renderFragmentPuzzle();
+        }
+
+        function checkFragmentPuzzle() {
+            const userWord = assembledWord.map(f => f.letter).join('');
+            const errorDiv = document.getElementById('error6');
+            const successDiv = document.getElementById('success6');
+            
+            if (userWord.length !== 6) {
+                errorDiv.textContent = '請將所有碎片都放入組裝區域！還需要 ' + (6 - userWord.length) + ' 個碎片。';
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                setTimeout(() => errorDiv.style.display = 'none', 4000);
+                return;
+            }
+            
+            if (userWord === 'CREATE') {
+                successDiv.innerHTML = '🎉 <strong>恭喜！</strong>你成功重組了創造的力量！<br>「CREATE」- 宇宙六完成！ ✨';
+                successDiv.style.display = 'block';
+                errorDiv.style.display = 'none';
+                
+                // 添加完成動畫效果
+                const fragments = document.querySelectorAll('.letter-fragment.assembled');
+                fragments.forEach((fragment, index) => {
+                    setTimeout(() => {
+                        fragment.style.transform = 'scale(1.2) rotate(360deg)';
+                        fragment.style.background = 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)';
+                    }, index * 200);
+                });
+                
+                setTimeout(() => {
+                    completeLevel(6);
+                }, 3000);
+            } else {
+                errorDiv.innerHTML = `💭 組合「${userWord}」不正確！<br>請重新排列碎片，尋找創造的真諦...`;
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                setTimeout(() => errorDiv.style.display = 'none', 4000);
+            }
+        }
+
+        function resetFragmentPuzzle() {
+            initFragmentPuzzle();
+        }
+
+        // 開始遊戲時更新宇宙六狀態
+        function startGame() {
+            loadProgress();
+            gameStarted = true;
+            document.getElementById('introPage').classList.add('hidden');
+            document.getElementById('gameContainer').classList.remove('hidden');
+            
+            // 確保關卡選擇頁面顯示
+            document.getElementById('levelsGrid').classList.remove('hidden');
+            document.getElementById('levelDetail').style.display = 'none';
+            
+            // 更新宇宙六的解鎖狀態
+            updateLevel6Status();
+            
+            if (completedLevels.size < 6 && !gameTimer) {
+                startTimer();
+            }
+            updateProgress();
+        }
     </script>
 </body>
 </html>
