@@ -528,7 +528,7 @@
         <!-- 開場介面 -->
         <div class="intro-page" id="introPage">
             <div class="intro-content">
-                <h1 class="game-title">靈感不是人給的</h1>
+                <h1 class="game-title">靈感不是人造的</h1>
                 <div class="story-content">
                     <p><strong>多元宇宙的奇幻冒險</strong></p>
                     <br>
@@ -562,7 +562,6 @@
             <!-- 進度顯示 -->
             <div class="progress-info">
                 <span id="progressText">已完成 0/6 個宇宙</span>
-                <button class="reset-btn" onclick="backToStory()" style="margin-left: 20px; padding: 5px 10px; font-size: 0.8em;">回到故事主題</button>
             </div>
 
             <!-- 關卡選擇頁面 -->
@@ -631,7 +630,6 @@
             <!-- 關卡詳情頁面 -->
             <div class="level-detail" id="levelDetail">
                 <button class="back-btn" onclick="backToGrid()">返回宇宙選擇</button>
-                <button class="reset-btn" onclick="backToStory()">回到故事主題</button>
                 <div id="levelContent"></div>
             </div>
         </div>
@@ -649,7 +647,7 @@
                 <p>所有宇宙的高小明都因為你的幫助而得救了！</p>
                 <p>你展現了卓越的解謎能力和堅持不懈的精神！</p>
             </div>
-            <button class="start-btn" onclick="backToStory()" style="margin-top: 20px;">回到故事主題</button>
+            <button class="start-btn" onclick="resetGame()" style="margin-top: 20px;">重新開始遊戲</button>
         </div>
     </div>
 
@@ -820,28 +818,62 @@
             document.getElementById('introPage').classList.add('hidden');
             document.getElementById('gameContainer').classList.remove('hidden');
             
+            // 確保關卡選擇頁面顯示
+            document.getElementById('levelsGrid').classList.remove('hidden');
+            document.getElementById('levelDetail').style.display = 'none';
+            
             if (completedLevels.size < 6 && !gameTimer) {
                 startTimer();
             }
             updateProgress();
         }
 
-        // 回到故事主題
-        function backToStory() {
-            saveProgress();
+        // 重新開始遊戲
+        function resetGame() {
+            const confirmReset = confirm('確定要重新開始遊戲嗎？這將會清除所有已完成的關卡進度。');
+            
+            if (!confirmReset) {
+                return;
+            }
+            
+            if (gameTimer) {
+                clearInterval(gameTimer);
+            }
+            
             gameStarted = false;
+            timeLeft = 40 * 60;
+            completedLevels.clear();
+            currentLevel1Question = 0;
+            currentLevel2Question = 0;
+            currentLevel3Question = 0;
+            currentLevel4Question = 0;
+            currentLevel5Question = 0;
             
-            // 隱藏成功頁面（如果顯示的話）
-            const successPage = document.getElementById('successPage');
-            successPage.style.display = 'none';
+            for (let i = 1; i <= 6; i++) {
+                const statusElement = document.querySelector(`#status${i}`);
+                if (statusElement) {
+                    statusElement.textContent = '可探索';
+                    statusElement.className = 'level-status status-available';
+                }
+                
+                const cardElement = statusElement?.closest('.level-card');
+                if (cardElement) {
+                    cardElement.classList.remove('completed');
+                }
+            }
             
-            // 隱藏遊戲容器
+            const progressInfo = document.getElementById('progressInfo');
+            if (progressInfo) {
+                progressInfo.textContent = '';
+            }
+            
+            // 隱藏成功頁面和遊戲容器
+            document.getElementById('successPage').style.display = 'none';
             document.getElementById('gameContainer').classList.add('hidden');
             document.getElementById('levelDetail').style.display = 'none';
-            
-            // 顯示開場頁面
-            updateIntroProgress();
+            document.getElementById('levelsGrid').classList.remove('hidden');
             document.getElementById('introPage').classList.remove('hidden');
+            document.getElementById('timeDisplay').style.color = '#8b755d';
         }
 
         // 更新首頁進度顯示
