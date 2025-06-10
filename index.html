@@ -206,6 +206,17 @@
             border-color: rgba(139, 117, 93, 0.5);
         }
 
+        .level-card.locked {
+            background: rgba(139, 117, 93, 0.1);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .level-card.locked:hover {
+            transform: none;
+            box-shadow: 0 4px 15px rgba(139, 117, 93, 0.2);
+        }
+
         .level-header {
             display: flex;
             justify-content: space-between;
@@ -237,6 +248,12 @@
             background: rgba(166, 137, 104, 0.2);
             color: #a68968;
             border-color: rgba(166, 137, 104, 0.4);
+        }
+
+        .status-locked {
+            background: rgba(184, 92, 71, 0.1);
+            color: #8b4513;
+            border-color: rgba(184, 92, 71, 0.3);
         }
 
         .level-description {
@@ -436,7 +453,7 @@
 
         /* 成功頁面 - 完全隱藏在初始狀態 */
         .success-page {
-            display: none !important;
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
@@ -445,8 +462,8 @@
             background: linear-gradient(135deg, #f4e8d0 0%, #e6d3b0 50%, #d4c19c 100%);
             z-index: 9999;
             text-align: center;
-            flex-direction: column;
             justify-content: center;
+            align-items: center;
         }
 
         .success-content {
@@ -492,6 +509,139 @@
                 0 2px 8px rgba(139, 117, 93, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.3);
             border: 1px solid rgba(139, 117, 93, 0.3);
+        }
+
+        /* 字母收集顯示 */
+        .collected-letters {
+            background: rgba(139, 117, 93, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid rgba(139, 117, 93, 0.2);
+        }
+
+        .collected-letters h3 {
+            color: #8b755d;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .letter-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .letter-item {
+            background: linear-gradient(135deg, #8b755d 0%, #a68968 100%);
+            color: #f4e8d0;
+            border: 2px solid rgba(139, 117, 93, 0.4);
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(139, 117, 93, 0.3);
+        }
+
+        /* 字母掉落彈出視窗 */
+        .letter-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .letter-popup-content {
+            background: rgba(244, 232, 208, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(139, 117, 93, 0.3);
+            border: 2px solid rgba(139, 117, 93, 0.3);
+            max-width: 400px;
+            animation: letterDrop 0.5s ease-out;
+        }
+
+        @keyframes letterDrop {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .letter-popup h2 {
+            color: #8b755d;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .letter-popup .letter-item {
+            font-size: 2em;
+            padding: 20px 30px;
+            margin: 20px auto;
+            display: inline-block;
+        }
+
+        /* 第六關解鎖界面 */
+        .unlock-interface {
+            background: rgba(139, 117, 93, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(139, 117, 93, 0.3);
+            text-align: center;
+        }
+
+        .unlock-interface h3 {
+            color: #8b755d;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .unlock-hint {
+            color: #5a4a3a;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .letter-input-area {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .letter-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(139, 117, 93, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.9);
+            color: #4a3728;
+            text-transform: uppercase;
+        }
+
+        .letter-input:focus {
+            outline: none;
+            border-color: #8b755d;
+            box-shadow: 0 0 0 3px rgba(139, 117, 93, 0.1);
         }
 
         /* 第六關拼字遊戲樣式 */
@@ -568,6 +718,10 @@
             .level-detail {
                 padding: 25px;
             }
+
+            .letter-input-area {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -610,6 +764,14 @@
             <!-- 進度顯示 -->
             <div class="progress-info">
                 <span id="progressText">已完成 0/6 個宇宙</span>
+            </div>
+
+            <!-- 收集的字母顯示 -->
+            <div class="collected-letters" id="collectedLetters" style="display: none;">
+                <h3>收集的神秘字母</h3>
+                <div class="letter-display" id="letterDisplay">
+                    <!-- 字母會在這裡動態顯示 -->
+                </div>
             </div>
 
             <!-- 關卡選擇頁面 -->
@@ -664,13 +826,14 @@
                     </div>
                 </div>
 
-                <div class="level-card" onclick="openLevel(6)">
+                <div class="level-card locked" id="level6Card">
                     <div class="level-header">
                         <div class="level-title">宇宙六 - 創造者的挑戰</div>
-                        <div class="level-status status-available" id="status6">可探索</div>
+                        <div class="level-status status-locked" id="status6">需要解鎖</div>
                     </div>
                     <div class="level-description">
-                        充滿創意和想像力的高小明，在神秘機器前接受創造者的最終試煉...
+                        充滿創意和想像力的高小明，在神秘機器前接受創造者的最終試煉...<br>
+                        <span style="color: #8b4513; font-weight: bold; font-style: italic;">需要收集所有神秘字母才能解鎖</span>
                     </div>
                 </div>
             </div>
@@ -686,16 +849,24 @@
     <!-- 成功頁面 - 完全獨立於主容器 -->
     <div class="success-page" id="successPage">
         <div class="success-content">
-            <h1>恭喜過關！</h1>
-            <h2>多元宇宙的高小明們都得救了！</h2>
-            <p>你成功解開了所有謎團，拯救了六個宇宙的高小明！</p>
-            <div id="finalTime"></div>
-            <div style="margin-top: 30px; padding: 20px; background: rgba(139, 117, 93, 0.1); border-radius: 10px; border: 1px solid rgba(139, 117, 93, 0.2);">
-                <p>恭喜你完成了這趟多元宇宙的奇幻冒險！</p>
-                <p>所有宇宙的高小明都因為你的幫助而得救了！</p>
-                <p>你展現了卓越的解謎能力和堅持不懈的精神！</p>
+            <h1 style="color: #8b755d; font-size: 2.5em; margin-bottom: 20px;">🎉 恭喜過關！ 🎉</h1>
+            <h2 style="color: #a68968; font-size: 1.8em; margin-bottom: 30px;">歡迎加入同德國小創造力資優班！</h2>
+            <div id="finalTime" style="font-size: 1.3em; color: #5a4a3a; margin-bottom: 30px; font-weight: bold;"></div>
+            <div style="margin-top: 30px; padding: 25px; background: rgba(139, 117, 93, 0.1); border-radius: 15px; border: 2px solid rgba(139, 117, 93, 0.2);">
+                <p style="font-size: 1.1em; margin-bottom: 15px;"><strong>你成功解開了所有謎團，拯救了六個宇宙的高小明！</strong></p>
+                <p style="font-size: 1.2em; color: #8b755d; font-weight: bold;">歡迎加入創造力資優班這個大家庭！</p>
             </div>
-            <button class="start-btn" onclick="resetGame()" style="margin-top: 20px;">重新開始遊戲</button>
+            <button class="start-btn" onclick="resetGame()" style="margin-top: 30px; font-size: 1.2em; padding: 15px 40px;">重新開始遊戲</button>
+        </div>
+    </div>
+
+    <!-- 字母掉落彈出視窗 -->
+    <div class="letter-popup" id="letterPopup">
+        <div class="letter-popup-content">
+            <h2>恭喜你撿到字母</h2>
+            <div class="letter-item" id="droppedLetter">?</div>
+            <p id="letterMessage">你獲得了一個神秘字母！</p>
+            <button class="start-btn" onclick="closeLetterPopup()" style="margin-top: 20px;">繼續冒險</button>
         </div>
     </div>
 
@@ -713,11 +884,22 @@
         let currentLevel4Question = 0;
         let currentLevel5Question = 0;
         let gameStarted = false;
+        let collectedLetters = new Set(); // 收集的字母
+
+        // 字母掉落映射
+        const levelLetters = {
+            1: 'C', // 消失的筆
+            2: 'A', // 曉柔的小雞
+            3: 'T', // 深夜的雞鳴聲
+            4: 'E', // 巨大外星雞
+            5: 'R'  // 龜仙人的詛咒
+        };
 
         // 進度保存和恢復
         function saveProgress() {
             const progress = {
                 completedLevels: Array.from(completedLevels),
+                collectedLetters: Array.from(collectedLetters),
                 currentLevel1Question: currentLevel1Question,
                 currentLevel2Question: currentLevel2Question,
                 currentLevel3Question: currentLevel3Question,
@@ -732,6 +914,7 @@
             if (window.gameProgress) {
                 const progress = window.gameProgress;
                 completedLevels = new Set(progress.completedLevels);
+                collectedLetters = new Set(progress.collectedLetters || []);
                 currentLevel1Question = progress.currentLevel1Question || 0;
                 currentLevel2Question = progress.currentLevel2Question || 0;
                 currentLevel3Question = progress.currentLevel3Question || 0;
@@ -880,6 +1063,8 @@
                 startTimer();
             }
             updateProgress();
+            updateCollectedLettersDisplay();
+            checkLevel6Unlock();
         }
 
         // 重新開始遊戲
@@ -897,6 +1082,7 @@
             gameStarted = false;
             timeLeft = 40 * 60;
             completedLevels.clear();
+            collectedLetters.clear();
             currentLevel1Question = 0;
             currentLevel2Question = 0;
             currentLevel3Question = 0;
@@ -906,13 +1092,20 @@
             for (let i = 1; i <= 6; i++) {
                 const statusElement = document.querySelector(`#status${i}`);
                 if (statusElement) {
-                    statusElement.textContent = '可探索';
-                    statusElement.className = 'level-status status-available';
-                }
-                
-                const cardElement = statusElement?.closest('.level-card');
-                if (cardElement) {
-                    cardElement.classList.remove('completed');
+                    if (i === 6) {
+                        statusElement.textContent = '需要解鎖';
+                        statusElement.className = 'level-status status-locked';
+                        document.getElementById('level6Card').classList.add('locked');
+                        document.getElementById('level6Card').onclick = null;
+                    } else {
+                        statusElement.textContent = '可探索';
+                        statusElement.className = 'level-status status-available';
+                    }
+                    
+                    const cardElement = statusElement.closest('.level-card');
+                    if (cardElement && i !== 6) {
+                        cardElement.classList.remove('completed');
+                    }
                 }
             }
             
@@ -921,6 +1114,8 @@
                 progressInfo.textContent = '';
             }
             
+            document.getElementById('collectedLetters').style.display = 'none';
+            
             // 隱藏成功頁面和遊戲容器
             document.getElementById('successPage').style.display = 'none';
             document.getElementById('gameContainer').classList.add('hidden');
@@ -928,6 +1123,61 @@
             document.getElementById('levelsGrid').classList.remove('hidden');
             document.getElementById('introPage').classList.remove('hidden');
             document.getElementById('timeDisplay').style.color = '#8b755d';
+        }
+
+        // 顯示字母掉落彈出視窗
+        function showLetterDrop(letter) {
+            document.getElementById('droppedLetter').textContent = letter;
+            document.getElementById('letterMessage').textContent = `你獲得了神秘字母「${letter}」！`;
+            document.getElementById('letterPopup').style.display = 'flex';
+        }
+
+        // 關閉字母掉落彈出視窗
+        function closeLetterPopup() {
+            document.getElementById('letterPopup').style.display = 'none';
+        }
+
+        // 更新收集字母顯示
+        function updateCollectedLettersDisplay() {
+            const letterDisplay = document.getElementById('letterDisplay');
+            const collectedLettersContainer = document.getElementById('collectedLetters');
+            
+            if (collectedLetters.size > 0) {
+                collectedLettersContainer.style.display = 'block';
+                letterDisplay.innerHTML = '';
+                
+                // 按照 CRATE 的順序顯示
+                const orderLetters = ['C', 'R', 'A', 'T', 'E'];
+                orderLetters.forEach(letter => {
+                    if (collectedLetters.has(letter)) {
+                        const letterItem = document.createElement('div');
+                        letterItem.className = 'letter-item';
+                        letterItem.textContent = letter;
+                        letterDisplay.appendChild(letterItem);
+                    }
+                });
+            } else {
+                collectedLettersContainer.style.display = 'none';
+            }
+        }
+
+        // 檢查第六關解鎖條件
+        function checkLevel6Unlock() {
+            if (collectedLetters.size === 5) {
+                const level6Card = document.getElementById('level6Card');
+                const status6 = document.getElementById('status6');
+                
+                level6Card.classList.remove('locked');
+                level6Card.onclick = () => openLevel(6);
+                status6.textContent = '可解鎖';
+                status6.className = 'level-status status-available';
+                
+                // 更新描述
+                level6Card.querySelector('.level-description').innerHTML = `
+                    充滿創意和想像力的高小明，在神秘機器前接受創造者的最終試煉...<br>
+                    <span style="color: #27ae60; font-weight: bold; font-style: italic;">點擊進入解鎖界面！</span>
+                `;
+            }
         }
 
         // 更新首頁進度顯示
@@ -964,9 +1214,25 @@
 
         // 打開關卡
         function openLevel(level) {
+            // 第六關需要特殊處理
+            if (level === 6 && collectedLetters.size === 5 && !completedLevels.has(6)) {
+                showLevel6UnlockInterface();
+                return;
+            } else if (level === 6 && collectedLetters.size < 5) {
+                alert('需要收集所有5個神秘字母才能解鎖第六關！');
+                return;
+            }
+            
             loadProgress();
             document.getElementById('levelsGrid').classList.add('hidden');
             document.getElementById('levelDetail').style.display = 'block';
+            
+            // 檢查關卡是否已完成
+            if (completedLevels.has(level)) {
+                console.log(`關卡${level}已完成，顯示回顧模式`);
+            } else {
+                console.log(`關卡${level}進行中，當前進度：`, getCurrentQuestion(level));
+            }
             
             if (level === 1) {
                 showUniverseContent(1, universe1Questions, 'checkUniverse1Answer');
@@ -983,30 +1249,99 @@
             }
         }
 
+        // 顯示第六關解鎖界面
+        function showLevel6UnlockInterface() {
+            document.getElementById('levelsGrid').classList.add('hidden');
+            document.getElementById('levelDetail').style.display = 'block';
+            
+            document.getElementById('levelContent').innerHTML = `
+                <div class="level-header">
+                    <div class="level-title">宇宙六 - 創造者的挑戰</div>
+                    <div class="level-status status-available">解鎖中</div>
+                </div>
+                <div class="unlock-interface">
+                    <h3>🔐 第六關解鎖挑戰</h3>
+                    <div class="unlock-hint">
+                        你已經收集了所有5個神秘字母！<br>
+                        現在請輸入這五個字母來解鎖最終關卡。<br>
+                        <strong>提示：五個掉落的字母</strong>
+                    </div>
+                    <div class="letter-input-area">
+                        <input type="text" class="letter-input" maxlength="1" id="unlockInput1">
+                        <input type="text" class="letter-input" maxlength="1" id="unlockInput2">
+                        <input type="text" class="letter-input" maxlength="1" id="unlockInput3">
+                        <input type="text" class="letter-input" maxlength="1" id="unlockInput4">
+                        <input type="text" class="letter-input" maxlength="1" id="unlockInput5">
+                    </div>
+                    <button class="submit-btn" onclick="checkUnlockCode()" style="width: auto; padding: 10px 30px;">解鎖關卡</button>
+                    <div class="error-message" id="unlockError"></div>
+                </div>
+            `;
+            
+            // 添加輸入框事件監聽
+            for (let i = 1; i <= 5; i++) {
+                const input = document.getElementById(`unlockInput${i}`);
+                input.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase();
+                    if (this.value && i < 5) {
+                        document.getElementById(`unlockInput${i + 1}`).focus();
+                    }
+                });
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && i > 1) {
+                        document.getElementById(`unlockInput${i - 1}`).focus();
+                    }
+                });
+            }
+        }
+
+        // 檢查解鎖密碼
+        function checkUnlockCode() {
+            const inputs = [];
+            for (let i = 1; i <= 5; i++) {
+                inputs.push(document.getElementById(`unlockInput${i}`).value);
+            }
+            
+            const inputCode = inputs.join('');
+            const requiredLetters = ['C', 'R', 'A', 'T', 'E'];
+            
+            // 檢查是否包含所有必需的字母（順序不限）
+            const inputLetters = inputCode.split('');
+            const hasAllLetters = requiredLetters.every(letter => inputLetters.includes(letter));
+            
+            if (inputCode.length !== 5) {
+                const errorDiv = document.getElementById('unlockError');
+                errorDiv.textContent = '請輸入完整的5個字母！';
+                errorDiv.style.display = 'block';
+                setTimeout(() => errorDiv.style.display = 'none', 3000);
+                return;
+            }
+            
+            if (hasAllLetters) {
+                // 解鎖成功，進入第六關
+                setTimeout(() => {
+                    showGeneralLevel(6);
+                }, 1000);
+            } else {
+                const errorDiv = document.getElementById('unlockError');
+                errorDiv.textContent = '密碼不正確！請輸入你收集到的5個神秘字母。';
+                errorDiv.style.display = 'block';
+                setTimeout(() => errorDiv.style.display = 'none', 3000);
+            }
+        }
+
         // 顯示宇宙內容（通用函數）
         function showUniverseContent(level, questions, checkFunction) {
             const content = levelContents[level];
             const isCompleted = completedLevels.has(level);
             const currentQuestion = getCurrentQuestion(level);
             
+            console.log(`顯示宇宙${level}內容 - 已完成: ${isCompleted}, 當前題目: ${currentQuestion}, 總題目數: ${questions.length}`);
+            
             let puzzleHTML = '';
             
-            if (!isCompleted && currentQuestion < questions.length) {
-                const currentQ = questions[currentQuestion];
-                puzzleHTML = `
-                    <div class="question-progress">
-                        第 ${currentQuestion + 1} 題 / 共 ${questions.length} 題
-                    </div>
-                    <div class="puzzle-question">
-                        <strong>謎題：</strong>${currentQ.text}
-                    </div>
-                    <img src="${currentQ.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片">
-                    <input type="text" class="answer-input" id="answer${level}" placeholder="請輸入答案">
-                    <button class="submit-btn" onclick="${checkFunction}()">提交答案</button>
-                    <div class="error-message" id="error${level}"></div>
-                    <div class="success-message" id="success${level}"></div>
-                `;
-            } else {
+            // 如果關卡已完成，或者當前題目編號超出範圍，顯示回顧模式
+            if (isCompleted || currentQuestion >= questions.length) {
                 // 顯示完成後的所有題目回顧
                 puzzleHTML = `
                     <div class="puzzle-question">
@@ -1037,13 +1372,29 @@
                         繼續探索其他多元宇宙
                     </button>
                 `;
+            } else {
+                // 顯示當前題目
+                const currentQ = questions[currentQuestion];
+                puzzleHTML = `
+                    <div class="question-progress">
+                        第 ${currentQuestion + 1} 題 / 共 ${questions.length} 題
+                    </div>
+                    <div class="puzzle-question">
+                        <strong>謎題：</strong>${currentQ.text}
+                    </div>
+                    <img src="${currentQ.image}" class="puzzle-image" onclick="enlargeImage()" alt="謎題圖片">
+                    <input type="text" class="answer-input" id="answer${level}" placeholder="請輸入答案">
+                    <button class="submit-btn" onclick="${checkFunction}()">提交答案</button>
+                    <div class="error-message" id="error${level}"></div>
+                    <div class="success-message" id="success${level}"></div>
+                `;
             }
             
             document.getElementById('levelContent').innerHTML = `
                 <div class="level-header">
                     <div class="level-title">${content.title}</div>
-                    <div class="level-status ${isCompleted ? 'status-completed' : 'status-available'}">
-                        ${isCompleted ? '已完成' : '探索中'}
+                    <div class="level-status ${isCompleted || currentQuestion >= questions.length ? 'status-completed' : 'status-available'}">
+                        ${isCompleted || currentQuestion >= questions.length ? '已完成' : '探索中'}
                     </div>
                 </div>
                 <div class="story-section">
@@ -1072,9 +1423,20 @@
         function checkUniverseAnswer(level, questions) {
             const userAnswer = document.getElementById(`answer${level}`).value.trim();
             const currentQuestion = getCurrentQuestion(level);
+            
+            // 檢查是否超出題目範圍
+            if (currentQuestion >= questions.length) {
+                console.error(`關卡${level}：當前題目編號${currentQuestion}超出範圍，總題目數：${questions.length}`);
+                // 如果超出範圍，直接完成關卡
+                completeLevel(level);
+                return;
+            }
+            
             const correctAnswer = questions[currentQuestion].answer;
             const errorDiv = document.getElementById(`error${level}`);
             const successDiv = document.getElementById(`success${level}`);
+            
+            console.log(`關卡${level}，第${currentQuestion + 1}題，用戶答案：${userAnswer}，正確答案：${correctAnswer}`);
             
             if (userAnswer === '') {
                 errorDiv.textContent = '請輸入答案！';
@@ -1088,12 +1450,32 @@
                 successDiv.style.display = 'block';
                 errorDiv.style.display = 'none';
                 
+                // 先推進問題
+                advanceQuestion(level);
+                // 保存進度
+                saveProgress();
+                
                 setTimeout(() => {
-                    advanceQuestion(level);
-                    if (getCurrentQuestion(level) >= questions.length) {
+                    // 檢查是否完成所有題目
+                    const newCurrentQuestion = getCurrentQuestion(level);
+                    if (newCurrentQuestion >= questions.length) {
+                        console.log(`關卡${level}所有題目完成，準備完成關卡`);
                         completeLevel(level);
+                    } else {
+                        console.log(`關卡${level}進入第${newCurrentQuestion + 1}題`);
+                        // 如果還有更多題目，重新顯示當前關卡
+                        if (level === 1) {
+                            showUniverseContent(1, universe1Questions, 'checkUniverse1Answer');
+                        } else if (level === 2) {
+                            showUniverseContent(2, universe2Questions, 'checkUniverse2Answer');
+                        } else if (level === 3) {
+                            showUniverseContent(3, universe3Questions, 'checkUniverse3Answer');
+                        } else if (level === 4) {
+                            showUniverseContent(4, universe4Questions, 'checkUniverse4Answer');
+                        } else if (level === 5) {
+                            showUniverseContent(5, universe5Questions, 'checkUniverse5Answer');
+                        }
                     }
-                    openLevel(level);
                 }, 2000);
             } else {
                 errorDiv.textContent = '答案不正確，請再試一次！';
@@ -1186,44 +1568,6 @@
                 if (!isCompleted) {
                     initWordPuzzle();
                 }
-            } else {
-                // 其他一般關卡
-                document.getElementById('levelContent').innerHTML = `
-                    <div class="level-header">
-                        <div class="level-title">${content.title}</div>
-                        <div class="level-status ${completedLevels.has(level) ? 'status-completed' : 'status-available'}">
-                            ${completedLevels.has(level) ? '已完成' : '探索中'}
-                        </div>
-                    </div>
-                    <div class="story-section">
-                        <div class="story-title">故事背景</div>
-                        <p style="white-space: pre-line;">${content.story}</p>
-                    </div>
-                    <div class="puzzle-content">
-                        <div class="puzzle-question">
-                            <strong>謎題：</strong>${content.question}
-                        </div>
-                        <input type="text" class="answer-input" id="answer${level}" placeholder="請輸入答案">
-                        <button class="submit-btn" onclick="checkAnswer(${level})">提交答案</button>
-                        <div class="error-message" id="error${level}"></div>
-                        <div class="success-message" id="success${level}"></div>
-                    </div>
-                `;
-            }
-        }
-
-        // 檢查一般關卡答案
-        function checkAnswer(level) {
-            const userAnswer = document.getElementById(`answer${level}`).value.trim();
-            const correctAnswer = answers[level];
-            
-            if (userAnswer === correctAnswer) {
-                completeLevel(level);
-            } else {
-                const errorDiv = document.getElementById(`error${level}`);
-                errorDiv.textContent = '答案不正確，請再試一次！';
-                errorDiv.style.display = 'block';
-                setTimeout(() => errorDiv.style.display = 'none', 3000);
             }
         }
 
@@ -1231,16 +1575,39 @@
         function completeLevel(level) {
             completedLevels.add(level);
             
-            const statusElement = document.querySelector(`#status${level}`);
-            statusElement.textContent = '已完成';
-            statusElement.className = 'level-status status-completed';
+            // 如果是前五關，掉落字母
+            if (level >= 1 && level <= 5 && levelLetters[level]) {
+                const letter = levelLetters[level];
+                if (!collectedLetters.has(letter)) {
+                    collectedLetters.add(letter);
+                    setTimeout(() => {
+                        showLetterDrop(letter);
+                    }, 1500);
+                }
+            }
             
-            const cardElement = statusElement.closest('.level-card');
-            cardElement.classList.add('completed');
+            const statusElement = document.querySelector(`#status${level}`);
+            if (statusElement) {
+                statusElement.textContent = '已完成';
+                statusElement.className = 'level-status status-completed';
+                
+                const cardElement = statusElement.closest('.level-card');
+                if (cardElement) {
+                    cardElement.classList.add('completed');
+                }
+            }
             
             updateProgress();
+            updateCollectedLettersDisplay();
+            checkLevel6Unlock();
+            saveProgress();
             
-            if (completedLevels.size === 6) {
+            // 特別處理第六關完成
+            if (level === 6) {
+                console.log('第六關完成，準備跳轉成功頁面');
+                // 不需要延遲，直接跳轉
+                endGame(true);
+            } else if (completedLevels.size === 6) {
                 setTimeout(() => endGame(true), 1000);
             }
         }
@@ -1258,19 +1625,35 @@
 
         // 結束遊戲
         function endGame(success) {
+            console.log('endGame被調用，success:', success);
             clearInterval(gameTimer);
             
             if (success) {
                 const totalTime = 40 * 60 - timeLeft;
                 const minutes = Math.floor(totalTime / 60);
                 const seconds = totalTime % 60;
-                const timeString = `${minutes}分${seconds}秒`;
                 
-                document.getElementById('finalTime').innerHTML = `<h3>完成時間: ${timeString}</h3>`;
-                document.getElementById('successPage').style.display = 'flex';
+                console.log('準備顯示成功頁面，總時間:', totalTime, '分鐘:', minutes, '秒:', seconds);
+                
+                document.getElementById('finalTime').innerHTML = `
+                    <div style="background: rgba(27, 174, 112, 0.1); padding: 20px; border-radius: 12px; border: 2px solid rgba(27, 174, 112, 0.3);">
+                        <p style="font-size: 1.4em; color: #1bae70; margin-bottom: 10px;">🏆 任務完成時間</p>
+                        <p style="font-size: 2em; color: #8b755d; font-weight: bold;">你總共使用了 ${minutes} 分 ${seconds} 秒完成解謎</p>
+                    </div>
+                `;
+                
+                const successPage = document.getElementById('successPage');
+                console.log('成功頁面元素:', successPage);
+                
+                if (successPage) {
+                    successPage.style.display = 'flex';
+                    console.log('成功頁面已顯示');
+                } else {
+                    console.error('找不到成功頁面元素！');
+                }
             } else {
                 alert('時間到！遊戲結束。');
-                backToStory();
+                backToGrid();
             }
         }
 
@@ -1403,7 +1786,10 @@
                 successDiv.style.display = 'block';
                 errorDiv.style.display = 'none';
                 
+                console.log('CREATE拼字成功，準備完成第六關');
+                
                 setTimeout(() => {
+                    console.log('開始完成第六關流程');
                     completeLevel(6);
                 }, 2000);
             } else {
